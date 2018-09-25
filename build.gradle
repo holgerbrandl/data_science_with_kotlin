@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+}
+
+group 'com.github.holgerbrandl'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://jitpack.io' }
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src'
+//    main.java.srcDirs += 'src/main/myJava'
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+//    compile "de.mpicbg.scicomp:krangl:0.10-SNAPSHOT"
+//    compile "de.mpicbg.scicomp:kutils:0.9.0"
+
+//    compile "com.github.holgerbrandl:kravis:0.3-SNAPSHOT"
+    compile 'com.github.holgerbrandl:kravis:-SNAPSHOT'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
