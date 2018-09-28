@@ -117,3 +117,126 @@ teachable: less than python or r, but better tooling
 So can we build data science libraries with? --> next slide
 
 
+
+---
+# Just use the Kotlin stdlib == more gym time!?
+
+* `map`, `fold`, `filter`, `reduce` are cool and fun
+* Useful IO utilities like `File.readLines()`
+* Great string manipulation helpers
+* Great collection API
+* Grouping API
+
+```kotlin
+data class User(val firstName: String?, val lastName: String, 
+                val age: Int, val hasSudo: Boolean?)
+
+val users = listOf(User(...), ...)
+
+val groupingBy : Grouping<User, Int> = users.groupingBy { it.age }
+
+groupingBy.eachCount()
+
+users.groupingBy { listOf(it.age, it.hasSudo) }.map{  ... }.fold{ ... }
+```
+
+More advanced slicing possible with https://github.com/thomasnield/kotlin-statistics
+
+### Still, not enough to implement DS life cycle!
+
+???
+
+so apart from the amazing language spec, what is in the stdlib for data science
+
+winter is coming --> summer is coming
+
+.. so another year no beachbody
+
+for details see https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-grouping/
+
+
+---
+# Kotlin Basics Revisited: Function literals
+
+> A _lambda expression_ or an anonymous function is a _function literal_, i.e. a function that is not declared, but passed immediately as an expression.
+
+```kotlin
+fun lazyMsg(condition: Boolean, msg: (Date) -> String) {
+    if (condition) println(msg(Date()))
+}
+
+lazyMsg(true, { occurred -> "huhu + ${occurred}"})
+```
+
+--
+
+If a function literal has only _one_ parameter, its declaration may be omitted and its name will be `it`.
+
+```kotlin
+lazyMsg(true){ "huhu ${it}" }
+lazyMsg(true){ "huhu" } // .. or ignore it
+```
+
+--
+
+If the _last_ parameter to a function is a function, and you're passing a lambda expression as the corresponding argument, you can specify it outside of parentheses.
+
+```kotlin
+lazyMsg(true){ "huhu ${it}" }
+```
+
+???
+
+to make sure that everyone is on same page, here ....
+
+`msg` is supposed to be a function that takes a `Date` argument and returns a value of type `String`.
+
+cool, but kotlin goes even further
+
+`it`: implicit name of a single parameter
+
+
+
+For full details see  https://kotlinlang.org/docs/reference/lambdas.html
+
+---
+## Build an API with type aliases + extensions + lambdas
+
+Envisioned user API for `krangl`
+```kotlin
+val newDf   = staff.addColumn("age_plus_3") { it["age"] + 3 }
+val otherDF = staff.addColumn("row_number") { rowNumber }
+```
+
+--
+
+Behind the scenes
+```kotlin
+fun DataFrame.addColumn(columnName: String, expression: TableExpression): DataFrame = 
+    addColumn(ColumnFormula(columnName, expression))
+
+// typealias TableExpression = DataFrame.(DataFrame) -> Any? // .. in first prototype, now:
+typealias TableExpression = ExpressionContext.(ExpressionContext) -> Any?
+
+class ExpressionContext(val df: DataFrame) {
+    operator fun get(name: String): DataCol = df[name]
+
+    val rowNumber: List<Int> get() = (1..df.nrow).toList()
+}
+```
+
+* `it` in examples is instance of `ExpressionContext` proxying the `df`
+* Allows to refer with `it` and `this` to expression context
+
+
+???
+
+user perspective `it` is the df, but it is actually not. Just the relevant bits of it
+
+---
+# Receivers in function literals provide scope control
+
+Context specific for completion in IDE
+
+![](images/select_completion.png)
+
