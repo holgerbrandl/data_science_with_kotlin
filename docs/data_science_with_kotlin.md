@@ -1,7 +1,7 @@
 ---
 title: "A wild ride through New York City"
 subtitle: "Building Data Science Workflows with Kotlin<br><br><img src='images/kotlin_conf_logo.png' width='400'>"
-author: "a<a href='https://twitter.com/holgerbrandl'>@holgerbrandl</a>"
+author: "<a href='https://twitter.com/holgerbrandl'>@holgerbrandl</a>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -11,19 +11,6 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
----
-
-class: middle, inverse
-
-<!-- ## Outline -->
-# Outline
-
-### Ingredients for data science?
-### Table Wrangling
-### Beyond Tables
-### Data Visualization
-### Reporting & Notebooks
-
 ---
 
 class: middle, inverse
@@ -38,7 +25,7 @@ class: middle, inverse
 
 
 ---
-# The data-science life cycle
+# The data-science(tists) life cycle
 
 .center[![](images/data_science_lifecycle.png)]
 
@@ -50,6 +37,7 @@ class: middle, inverse
 
 ???
 
+Def Data Scientist
 from https://www.kdnuggets.com/2017/05/42-essential-quotes-data-science-thought-leaders.html
 > half hacker, half analyst, they use data to build products and find insights
 
@@ -59,84 +47,31 @@ any software engineer and better at software engineering than any
 statistician.
 
 
-
-https://blog.modeanalytics.com/python-data-visualization-libraries/
-
-better package
-
-http://jules32.github.io/2016-07-12-Oxford/dplyr_tidyr
-
-.footnote[
-<!-- http://jules32.github.io/2016-07-12-Oxford/dplyr_tidyr -->
-https://goo.gl/wfmZrN
-]
-
-.footnote[
-DSL talk: Frederico Tomasetti
-https://github.com/Kotlin/KEEP/issues/75
-
-https://github.com/Kotlin/KEEP/blob/scripting/proposals/scripting-support.md
-]
-
-
-
----
-background-image: url(images/kotlin_logo.jpg)
-background-position: center
-background-repeat: no-repeat
-background-size: 78%
-
-# Since February 2016
-
-.left-column40[
-
-Kotlin v1.0 released
-
-#### Type Inference
-#### Extension Functions
-#### Data Classes
-#### DSLs in Mind
-#### Default Parameters
-#### Lives in JVM
-#### Scripting Support
-
-]
-
---
-
-.right-column60[
-
-.right[
-Data Science Requirements
-## Proper Dependency Model ![](images/check.png)
-## Scales from idea to product ![](images/check.png)
-## Teachable ![](images/check.png)
-## Rapid Prototyping ![](images/check.png)
-]
-]
-
-???
-
-somewhen in early 2016 god seemed to have heard our prays, and gave us kotlin.
-
-release day 15.2.
-
-what a beauty!
-
-teachable: less than python or r, but better tooling
-
-So can we build data science libraries with? --> next slide
-
-
-
 ---
 background-image: url(images/java_reading.jpg)
 background-position: center
 background-repeat: no-repeat
 background-size: 90%
 
-# Can we build data science workflows with Kotlin?
+# Can we do data science with Kotlin?
 
+
+Is the language suited for data science?
+
+#### Can we express typical data and workflows?
+
+Are the ingredients ready to do data-science with Kotlin?
+
+#### Is there an interactive shell?
+#### How to build reports & Notebook Support?
+#### How to manipulation typed and untyped data?
+#### How to do data visualization?
+
+--
+
+### So can we?  We wont' know without trying!
+
+???
 
 Should we? Yes, because
 
@@ -144,22 +79,341 @@ Should we? Yes, because
 * Java is known for great dependency tooling & scalability
 * Java as a language is less well suited for data-science (cluttered, legacy bits)
 
-For detailed arguments see [kscript @ kotlin-conf slides](https://holgerbrandl.github.io/kscript_kotlinconf_2017/kscript_kotlinconf.html)
+
+---
+
+background-image: url(images/nyc.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
+
+class: middle, inverse, center
+
+</p>
+https://www.kaggle.com/c/nyc-taxi-trip-duration/
+
+# Predict NYC Taxi Trip Durations with Kotlin
 
 --
 
-Language requirements for the data science life cycle
-#### 1. Can we express typical data problems and workflows?
-#### 2. Can we model core concepts (typed vs untyped data, json, tsv, unstructured)?
+# NOW!
+
+
+???
+
+Image source (public domain) https://www.goodfreephotos.com/united-states/new-york/new-york-city/aerial-photo-of-new-york-city.jpg.php
+
+---
+
+class: middle, inverse
+
+# Kotlin Stack for Data Science
+
+### Interactive Shell
+### Report Rendering & Notebook Support
+### Manipulation of typed and untyped data
+### Data Visualization
+
+---
+
+background-image: url(images/ide_repl.jpg)
+background-position: bottom
+background-size: 95%
+
+---
+background-image: url(images/ide_repl_light.jpg)
+background-position: bottom
+background-size: 95%
+
+# IDE console and terminal REPL need more work
+
+
+
+
+* [KT-11409](https://youtrack.jetbrains.com/issue/KT-11409) Add action "Send Selection To Kotlin Console"
+
+* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: allow adding a library to the classpath
+
+* [KT-14851](https://youtrack.jetbrains.com/issue/KT-14851) "this" is always defined in Kotlin REPL
+
+* [KT-21224](https://youtrack.jetbrains.com/issue/KT-21224 ) Incorrect alignment of commands and outputs in REPL
+
+* [KT-13319](https://youtrack.jetbrains.net/issue/KT-13319) - REPL: support ":paste" for pasting multi-line expressions
+
+* Many more https://youtrack.jetbrains.net/issues/KT?q=repl%20state:Open
+
+> ### Overall usability not yet _en par_ with R or python
+
+
+---
+class: inverse
+
+# `khud/sparklin`
+
+
+.center[![](images/sparklin.png)]
+
+`sparklin` is a proof-of-concept software includes experimental new Kotlin REPL (aka `KShell`) which supports extensions and custom commands via plugin system.
+
+
+---
+# How to start a `kshell`?
+
+No proper launcher in repo yet, but meanwhile we can use [`kshell_kts.sh `](https://github.com/holgerbrandl/kscript/tree/master/misc/kshell_launcher)
+
+
+
+`krangl_example.kts`:
+
+```kotlin
+@file:DependsOn("com.offbytwo:docopt:0.6.0.20150202", "log4j:log4j:1.2.14")
+@file:DependsOn("de.mpicbg.scicomp:krangl:0.9.1")
+
+import krangl.sleepData             // ignored when spawning shell
+sleepData.select("total_sleep")     // ignored when spawning shell
+```
+
+Spawn your data-science shell with:
+```bash
+kshell_kts.sh krangl_example.kts
+```
+
+```bash
+Preparing interactive session by resolving script dependencies...
+[1] import krangl.*
+[2] irisData.schema()
+DataFrame with 150 observations
+Sepal.Length  [Dbl]  5.1, 4.9, 4.7, 4.6, 5, 5.4, 4.6, 5, 4.8, 4.8, 4.3, 5.8, 5.7, 5.4,...
+Sepal.Width   [Dbl]  3.5, 3, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 3.4, 3, 3, 4, 4.4, 3.9, 3.5...
+Petal.Length  [Dbl]  1.4, 1.4, 1.3, 1.5, 1.4, 1.7, 1.4, 1.5, 1.6, 1.4, 1.1, 1.2, 1.5, ...
+Petal.Width   [Dbl]  0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, ...
+Species       [Str]  setosa, setosa, setosa, setosa, setosa, setosa, setosa, setosa, s...
+[6] 
+```
+
+---
+
+background-image: url(images/push_to_repl.png)
+background-position: bottom
+background-size: 95%
+
+# How to send code to from IDE to `kshell`?
+
+---
+# Using the plugin "Send to Terminal"
+
+.left-column60[
+https://github.com/holgerbrandl/send2terminal
+
+* Send current line or selection (default shortcut `meta alt ENTER`)
+
+* Send current and move focus to next line with expression (default shortcut `meta alt shift ENTER`)
+
+
+Kotlin aware expression detection + automatic imports
+
+Also works for great for python & R and anything else in Intellij.
+
+Just works on MacOS :-(
+]
+
+.right-column40[
+
+![](images/42adf44f.png)
+
+]
+
+---
+
+class: middle, inverse
+
+# Kotlin Stack for Data Science
+
+### Interactive Shell
+## Report Rendering & Notebook Support
+### Manipulation of typed and untyped data
+### Data Visualization
+
+---
+
+background-image: url(images/spin_workflow.jpg)
+background-position: bottom
+background-size: 95%
+
+# How to convert Kotlin to HMTL?
+
+Aka _Literate Programming_
+> Build reports including source code, results, and  <br>visualzation from __code__
+
+* `python`:  markdown -> `notedown` + `nbconvert`
+* `r` script --> `knitr::spin` -> `knit` -> `pandoc`
 
 --
 
-### So can we?
+
+ #  `kts` -> **????** --> html
 
 
---
+???
 
-## We wont' know without trying!
+R ->  (**Speakers choice!**)
+
+*  IDE markdown support very good
+*  Kotln code chunk support not usable
+
+## Can we do this with Kotlin?
+
+---
+exclude: true
+
+```kotlin
+//' ## Flowers Analysis
+
+//' The iris flower
+//' ![](https://goo.gl/tTbZMq)
+
+@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
+@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
+
+import krangl.*
+
+
+
+//' The first records in the input data (which is bundled with krangl) are
+irisData
+
+//' The structure of the input data is
+irisData.glimpse()
+
+//' Calculate mean petal
+val summarizeDf: DataFrame = irisData
+    .groupBy("Species")
+    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
+
+//' Print the summarized data
+summarizeDf.print()
+
+//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
+```
+
+
+---
+
+# Yes we can, `kts`->`markdown`->`jupyter`->`html`
+
+```bash
+inputScript=krangl_example_report.kts
+reportName=$(basename $inputScript .kts)
+
+# https://www.r-project.org/
+Rscript - ${inputScript} <<"EOF"
+knitr::spin(commandArgs(T)[1], doc = "^//'[ ]?", knit=F)
+EOF
+
+# https://github.com/holgerbrandl/kscript
+kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd > ${reportName}.md
+
+# https://github.com/aaren/notedown
+notedown ${reportName}.md > ${reportName}.ipynb
+
+# http://jupyter.org/install
+jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
+        --execute --to html ${reportName}.ipynb --output ${reportName}
+```
+
+Proof-of-Concept. :-)
+
+All but the last step could be reworked into a standalone tool.
+
+???
+
+the geeky corner
+
+Alternative approaches?
+
+---
+exclude: true
+
+<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
+
+
+???
+
+Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
+
+What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
+
+... Kidding:
+
+---
+
+## ![](images/project_jupyter.png)
+
+.left-column60[
+> Open-source web application that allows you to create and share
+  documents that contain live code, equations, visualizations and narrative text.
+
+Pros
+* Fast prototyping
+* Literate Programming
+* Great Narrative
+* Shareable insights without build process
+
+Cons
+* Collaboration is tricky
+* Versioning and code reviews are hard
+* Webapp not a real IDE substitute -> JupyterLab
+]
+
+.right-column40[
+![](images/d2013656.png)
+
+]
+
+???
+
+Very popular framework that is "Super-Charging Data Science"
+
+
+
+https://www.quora.com/What-are-the-pros-and-cons-of-using-Python-Jupyter-versus-a-normal-Python-development-environment
+
+https://unidata.github.io/online-python-training/introduction.html
+
+---
+# Kotlin Notebooks?
+
+> A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
+
+Two competing kernels for Kotlin
+
+1. https://github.com/ligee/kotlin-jupyter
+
+    * More established
+    * Backed by JB
+    * Friendly and responsive developers
+    * Not really active
+
+2. https://github.com/twosigma/beakerx
+
+    > a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
+
+    * Very active, fast progress
+    * Friendly and very responsive developers
+    * Not __just__ a kernel
+    * Display handler registry in kernel `krangl.beakerx.TableDisplayer.register()`
+
+???
+
+beakerx: adapaters for tablesaw https://github.com/jtablesaw/tablesaw/tree/master/beakerx and morpheus
+
+---
+
+![](images/kotlin_notebook_example.png)
+
+???
+
+Definietly cool, but lacks effieciency because of missing tooling (error checking, compeltion, refactoring)
 
 
 ---
@@ -1117,335 +1371,7 @@ versicolor   org.apache.commons.math3.stat.regression.SimpleRegression@7bfcd12c 
 
 ---
 
-class: middle, inverse
-
-# Kotlin Stack for Data Science?
-
-### Interactive Shell
-### Tooling
-### Graphics Device
-### Libraries
-### Report Rendering & Notebook Support
-
----
-
-background-image: url(images/ide_repl.jpg)
-background-position: bottom
-background-size: 95%
-
----
-background-image: url(images/ide_repl_light.jpg)
-background-position: bottom
-background-size: 95%
-
-# IDE console and terminal REPL need more work
-
-
-
-
-* [KT-11409](https://youtrack.jetbrains.com/issue/KT-11409) Add action "Send Selection To Kotlin Console"
-
-* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: allow adding a library to the classpath
-
-* [KT-14851](https://youtrack.jetbrains.com/issue/KT-14851) "this" is always defined in Kotlin REPL
-
-* [KT-21224](https://youtrack.jetbrains.com/issue/KT-21224 ) Incorrect alignment of commands and outputs in REPL
-
-* [KT-13319](https://youtrack.jetbrains.net/issue/KT-13319) - REPL: support ":paste" for pasting multi-line expressions
-
-* https://youtrack.jetbrains.net/issues/KT?q=repl%20state:Open
-
-> ### Overall usability not yet en par with R or python shell
-
-
----
-class: inverse
-
-# `khud/sparklin`
-
-.center[![](images/krangl_repo.png)]
-
-`sparklin` is a proof-of-concept software includes experimental new Kotlin REPL (aka `KShell`) which supports extensions and custom commands via plugin system.
-
-
----
-# How to start a `kshell`?
-
-No proper launcher in repo yet, but meanwhile we can use [`kshell_kts.sh `](https://github.com/holgerbrandl/kscript/tree/master/misc/kshell_launcher)
-
-
-
-`krangl_example.kts`:
-
-```kotlin
-@file:DependsOn("com.offbytwo:docopt:0.6.0.20150202", "log4j:log4j:1.2.14")
-@file:DependsOn("de.mpicbg.scicomp:krangl:0.9.1")
-
-import krangl.sleepData             // ignored when spawning shell
-sleepData.select("total_sleep")     // ignored when spawning shell
-```
-
-Spawn your data-science shell with:
-```bash
-kshell_kts.sh krangl_example.kts
-```
-
-```bash
-Preparing interactive session by resolving script dependencies...
-[1] import krangl.*
-[2] irisData.schema()
-DataFrame with 150 observations
-Sepal.Length  [Dbl]  5.1, 4.9, 4.7, 4.6, 5, 5.4, 4.6, 5, 4.8, 4.8, 4.3, 5.8, 5.7, 5.4,...
-Sepal.Width   [Dbl]  3.5, 3, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 3.4, 3, 3, 4, 4.4, 3.9, 3.5...
-Petal.Length  [Dbl]  1.4, 1.4, 1.3, 1.5, 1.4, 1.7, 1.4, 1.5, 1.6, 1.4, 1.1, 1.2, 1.5, ...
-Petal.Width   [Dbl]  0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, ...
-Species       [Str]  setosa, setosa, setosa, setosa, setosa, setosa, setosa, setosa, s...
-[6] 
-```
-
----
-
-background-image: url(images/push_to_repl.png)
-background-position: bottom
-background-size: 95%
-
-# How to send code to kshell?
-
----
-# Using the plugin "Send to Terminal"
-
-.left-column60[
-https://github.com/holgerbrandl/send2terminal
-
-* Send current line or selection (default shortcut `meta alt ENTER`)
-
-* Send current and move focus to next line with expression (default shortcut `meta alt shift ENTER`)
-
-
-Kotlin aware expression detection + automatic imports
-
-Also works for great for python & R and anything else in Intellij.
-
-Just works on MacOS :-(
-]
-
-.right-column40[
-
-![](images/42adf44f.png)
-
-]
-
----
-class: middle, inverse
-
-### Outline
-
-### Kotlin Stack for Data Science?
-### Table Wrangling
-### Beyond Tables
-### Data Visualization
-# Reporting & Notebooks
-
-
----
-
-## ![](images/project_jupyter.png)
-
-.left-column60[
-> Open-source web application that allows you to create and share
-  documents that contain live code, equations, visualizations and narrative text.
-
-Pros
-* Fast prototyping
-* Literate Programming
-* Great Narrative
-* Shareable insights without build process
-
-Cons
-* Collaboration is tricky
-* Versioning and code reviews are hard
-* Webapp not a real IDE substitute -> JupyterLab
-]
-
-.right-column40[
-![](images/d2013656.png)
-
-]
-
-???
-
-Very popular framework that is "Super-Charging Data Science"
-
-
-
-https://www.quora.com/What-are-the-pros-and-cons-of-using-Python-Jupyter-versus-a-normal-Python-development-environment
-
-https://unidata.github.io/online-python-training/introduction.html
-
----
-# Kotlin Notebooks?
-
-> A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
-
-Two competing kernels for Kotlin
-
-1. https://github.com/ligee/kotlin-jupyter
-
-    * More established
-    * Backed by JB
-    * Friendly and responsive developers
-    * Not really active
-
-2. https://github.com/twosigma/beakerx
-
-    > a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
-
-    * Very active, fast progress
-    * Friendly and very responsive developers
-    * Not __just__ a kernel
-    * Display handler registry in kernel `krangl.beakerx.TableDisplayer.register()`
-
-???
-
-beakerx: adapaters for tablesaw https://github.com/jtablesaw/tablesaw/tree/master/beakerx and morpheus
-
----
-
-![](images/kotlin_notebook_example.png)
-
-???
-
-Definietly cool, but lacks effieciency because of missing tooling (error checking, compeltion, refactoring)
-
----
-
-background-image: url(images/spin_workflow.jpg)
-background-position: bottom
-background-size: 95%
-
-# Literate programming: Turn code into reports
-
-Enable result consistency and streamline communication by <br>
-building reports from code
-
-1. Develop data workflows interactively using plain and simple code
-2. Build reports embedding code and results
-
-
-Python:  markdown -> `notedown` + `nbconvert`
-
-R: R scripts --> `spin` -> `knit` -> `pandoc`
-
---
-
-## Can we do this with Kotlin?
-
-
-???
-
-R ->  (**Speakers choice!**)
-
-*  IDE markdown support very good
-*  Kotln code chunk support not usable
-
-
----
-
-```kotlin
-//' ## Flowers Analysis
-
-//' The iris flower
-//' ![](https://goo.gl/tTbZMq)
-
-@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
-@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
-
-import krangl.*
-
-
-
-//' The first records in the input data (which is bundled with krangl) are
-irisData
-
-//' The structure of the input data is
-irisData.glimpse()
-
-//' Calculate mean petal
-val summarizeDf: DataFrame = irisData
-    .groupBy("Species")
-    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
-
-//' Print the summarized data
-summarizeDf.print()
-
-//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
-```
-
-
----
-# `kts->html` converter
-
-```bash
-inputScript=krangl_example_report.kts
-reportName=$(basename $inputScript .kts)
-
-# https://www.r-project.org/
-Rscript - ${inputScript} <<"EOF"
-knitr::spin(commandArgs(T)[1], doc = "^//'[ ]?", knit=F)
-EOF
-
-# https://github.com/holgerbrandl/kscript
-kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd > ${reportName}.md
-
-# https://github.com/aaren/notedown
-notedown ${reportName}.md > ${reportName}.ipynb
-
-# http://jupyter.org/install
-jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
-        --execute --to html ${reportName}.ipynb --output ${reportName}
-```
-
-Proof-of-Concept. :-)
-
-All but the last step could be reworked into a standalone tool.
-
-???
-
-the geeky corner
-
-Alternative approaches?
-
----
-
-<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
-
-
-???
-
-Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
-
-What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
-
-... Kidding:
-
----
-
-background-image: url(images/the_ide.png)
-background-position: center
-background-size: 88%
-
-
----
-
-background-image: url(images/bugs.png)
-background-position: center
-background-size: 100%
-
-# Is **THE** IDE ready for Kotlin data sciene?
-
-Almost.
-
---
+# Next steps
 
 `kts` support not yet ready for prime time
 
@@ -1453,14 +1379,6 @@ Almost.
 * [KT-15019](https://youtrack.jetbrains.com/issue/KT-15019) Editor: `args` reference in .kts file is red
 * [KT-6928](https://youtrack.jetbrains.com/issue/KT-6928) Support Kotlin scratch files
 * [KT-11473](https://youtrack.jetbrains.com/issue/KT-11473) Allow debugging of Kotlin scripts
-
---
-
---
-
-No graphics device
-
---
 
 ### Raise your voice and vote on https://youtrack.jetbrains.com
 
@@ -1478,6 +1396,7 @@ kotlin conf rumours about **Data-Science IDE**
 
 other
 * [KT-12583](https://youtrack.jetbrains.com/issue/KT-12583) IDE REPL should run in project root directory
+
 
 
 ---

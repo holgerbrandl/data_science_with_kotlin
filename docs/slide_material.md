@@ -67,3 +67,53 @@ hide with
 exclude: true
 
 ```
+
+
+---
+background-image: url(images/kotlin_logo.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 78%
+
+# Since February 2016
+
+.left-column40[
+
+Kotlin v1.0 released
+
+#### Type Inference
+#### Extension Functions
+#### Data Classes
+#### DSLs in Mind
+#### Default Parameters
+#### Lives in JVM
+#### Scripting Support
+
+]
+
+--
+
+.right-column60[
+
+.right[
+Data Science Requirements
+## Proper Dependency Model ![](images/check.png)
+## Scales from idea to product ![](images/check.png)
+## Teachable ![](images/check.png)
+## Rapid Prototyping ![](images/check.png)
+]
+]
+
+???
+
+somewhen in early 2016 god seemed to have heard our prays, and gave us kotlin.
+
+release day 15.2.
+
+what a beauty!
+
+teachable: less than python or r, but better tooling
+
+So can we build data science libraries with? --> next slide
+
+
