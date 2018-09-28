@@ -1,34 +1,35 @@
----
-title: "Kotlin's emerging data-science ecosystem"
-subtitle: "Building Data Science Workflows & Libraries with Kotlin"
-author: "Holger Brandl"
-date: "Kotlin Night Frankfurt, 21.3.2018"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    css: ["default", "default-fonts",  "my-theme.css"]
-    nature:
-      ratio: '16:9'
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A wild ride through New York City</title>
+    <meta charset="utf-8">
+    <meta name="author" content="https://github.com/holgerbrandl - @holgerbrandl"/>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet"/>
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="my-theme.css" type="text/css"/>
+</head>
+<body>
+<textarea id="source">
+class: center, middle, inverse, title-slide
+
+# A wild ride through New York City
+## Building Data Science Workflows with Kotlin<br><br><img src='images/kotlin_conf_logo.png' width='400'>
+### <a href="https://github.com/holgerbrandl" class="uri">https://github.com/holgerbrandl</a> - <a
+        href='https://twitter.com/holgerbrandl'><span class="citation">@holgerbrandl</span></a>
+
 ---
 
-background-image: url(images/gdg_first_slide.png)
-background-position: center
-background-size: 100%
 
----
 class: middle, inverse
 
-<!-- ## Outline -->
+&lt;!-- ## Outline --&gt;
 # Outline
 
 ### Ingredients for data science?
 ### Table Wrangling
 ### Beyond Tables
 ### Data Visualization
-### Reporting & Notebooks
+### Reporting &amp; Notebooks
 
 ---
 
@@ -40,7 +41,7 @@ class: middle, inverse
 ### Table Wrangling
 ### Beyond Tables
 ### Data Visualization
-### Reporting & Notebooks
+### Reporting &amp; Notebooks
 
 
 ---
@@ -57,10 +58,10 @@ class: middle, inverse
 ???
 
 from https://www.kdnuggets.com/2017/05/42-essential-quotes-data-science-thought-leaders.html
-> half hacker, half analyst, they use data to build products and find insights
+&gt; half hacker, half analyst, they use data to build products and find insights
 
 or
->> Data Scientist (n.): Person who is better at statistics than
+&gt;&gt; Data Scientist (n.): Person who is better at statistics than
 any software engineer and better at software engineering than any
 statistician.
 
@@ -73,7 +74,7 @@ better package
 http://jules32.github.io/2016-07-12-Oxford/dplyr_tidyr
 
 .footnote[
-<!-- http://jules32.github.io/2016-07-12-Oxford/dplyr_tidyr -->
+&lt;!-- http://jules32.github.io/2016-07-12-Oxford/dplyr_tidyr --&gt;
 https://goo.gl/wfmZrN
 ]
 
@@ -131,7 +132,7 @@ what a beauty!
 
 teachable: less than python or r, but better tooling
 
-So can we build data science libraries with? --> next slide
+So can we build data science libraries with? --&gt; next slide
 
 
 
@@ -146,8 +147,8 @@ background-size: 90%
 
 Should we? Yes, because
 
-* R & Python fail to be scalable & robust solutions for data science
-* Java is known for great dependency tooling & scalability
+* R &amp; Python fail to be scalable &amp; robust solutions for data science
+* Java is known for great dependency tooling &amp; scalability
 * Java as a language is less well suited for data-science (cluttered, legacy bits)
 
 For detailed arguments see [kscript @ kotlin-conf slides](https://holgerbrandl.github.io/kscript_kotlinconf_2017/kscript_kotlinconf.html)
@@ -183,7 +184,7 @@ data class User(val firstName: String?, val lastName: String,
 
 val users = listOf(User(...), ...)
 
-val groupingBy : Grouping<User, Int> = users.groupingBy { it.age }
+val groupingBy : Grouping&lt;User, Int&gt; = users.groupingBy { it.age }
 
 groupingBy.eachCount()
 
@@ -198,7 +199,7 @@ More advanced slicing possible with https://github.com/thomasnield/kotlin-statis
 
 so apart from the amazing language spec, what is in the stdlib for data science
 
-winter is coming --> summer is coming
+winter is coming --&gt; summer is coming
 
 .. so another year no beachbody
 
@@ -223,11 +224,11 @@ val staffStats = listOf(Employee(1, "John"), Employee(2, "Anna"))
 * R/python lack static typing, which make such workflows more fluent/fun to write
 
 ```r
-staff %>% 
-    mutate(sick_days=predictSickDays(name)) %>%   # table with another column
-    left_join(userPerf) %>%                       # and some more columns
-    left_join(salaries) %>%                       # and even more columns
-    select_if(is.numeric) %>%                     
+staff %&gt;% 
+    mutate(sick_days=predictSickDays(name)) %&gt;%   # table with another column
+    left_join(userPerf) %&gt;%                       # and some more columns
+    left_join(salaries) %&gt;%                       # and even more columns
+    select_if(is.numeric) %&gt;%                     
     correlate(type="spearman")                    # correlate numeric attributes
 ```
 
@@ -262,7 +263,7 @@ correlation via: https://github.com/drsimonj/corrr
 
 `val dataFrame : DataFrame =`
 
-| `employee:Employee` | `sales:List<Sale>` | `age:Int` | `address:String` | `salary:Double`   |
+| `employee:Employee` | `sales:List&lt;Sale&gt;` | `age:Int` | `address:String` | `salary:Double`   |
 |:-----|:-------------|:----|:-----|:--|
 | `Employee(23, "Max")` |    `listOf(Sale(...), Sale())` |   23  | "Frankfurt"     |  50.3E3 |
 | ... |  ...    | ...    |  ...    | ...  |
@@ -276,7 +277,7 @@ dataFrame.summarize("mean_salary"){ mean(it["salaray"])}
 val df: DataFrame = dataFrame.leftJoin(otherDF)
 
 // transformations like
-dataFrame.addColumn("intial"){ it["employee"].map<Employee>{ it.name.first() }}
+dataFrame.addColumn("intial"){ it["employee"].map&lt;Employee&gt;{ it.name.first() }}
 ```
 
 `+` `pandas`/`tidyverse` like API to create, manipulate, reshape, combine and summarize  data frames
@@ -314,16 +315,16 @@ Rather ambitious goal goal
 
 What is a DataFrame?
 
-> A "tabular" data structure representing cases/records (rows), each of which consists of a number of observations or measurements (columns)
+&gt; A "tabular" data structure representing cases/records (rows), each of which consists of a number of observations or measurements (columns)
 
 
 ```kotlin
 interface DataFrame {
-    val cols: List<DataCol>
+    val cols: List&lt;DataCol&gt;
 }
 
 abstract class DataCol(val name: String) {
-    abstract fun values(): Array<*>
+    abstract fun values(): Array&lt;*&gt;
 }
 ```
 * Implemented as column model to allow for vectorization where possible
@@ -356,35 +357,35 @@ val tornados = DataFrame.readCSV(pathAsStringFileOrUrl)
 tornados.writeCSV(File("tornados.txt.gz"))
 ```
 
-* Guess column types & default parameters
+* Guess column types &amp; default parameters
 * Built-in missing value support
 
 Convert any iterable into a data-frame via extension function + reflection
 
 ```kotlin
 data class Person(val name:String, val address:String)
-val persons : List<Person> = ...
+val persons : List&lt;Person&gt; = ...
 
 val personsDF: DataFrame = persons.asDataFrame() 
 ```
 
 ???
 
-low hanging fruits first --> the easy part
+low hanging fruits first --&gt; the easy part
 
 try to match kotlin wording `dataFrameOf`
 
 ---
 # Kotlin Basics Revisited: Function literals
 
-> A _lambda expression_ or an anonymous function is a _function literal_, i.e. a function that is not declared, but passed immediately as an expression.
+&gt; A _lambda expression_ or an anonymous function is a _function literal_, i.e. a function that is not declared, but passed immediately as an expression.
 
 ```kotlin
-fun lazyMsg(condition: Boolean, msg: (Date) -> String) {
+fun lazyMsg(condition: Boolean, msg: (Date) -&gt; String) {
     if (condition) println(msg(Date()))
 }
 
-lazyMsg(true, { occurred -> "huhu + ${occurred}"})
+lazyMsg(true, { occurred -&gt; "huhu + ${occurred}"})
 ```
 
 --
@@ -434,13 +435,13 @@ Behind the scenes
 fun DataFrame.addColumn(columnName: String, expression: TableExpression): DataFrame = 
     addColumn(ColumnFormula(columnName, expression))
 
-// typealias TableExpression = DataFrame.(DataFrame) -> Any? // .. in first prototype, now:
-typealias TableExpression = ExpressionContext.(ExpressionContext) -> Any?
+// typealias TableExpression = DataFrame.(DataFrame) -&gt; Any? // .. in first prototype, now:
+typealias TableExpression = ExpressionContext.(ExpressionContext) -&gt; Any?
 
 class ExpressionContext(val df: DataFrame) {
     operator fun get(name: String): DataCol = df[name]
 
-    val rowNumber: List<Int> get() = (1..df.nrow).toList()
+    val rowNumber: List&lt;Int&gt; get() = (1..df.nrow).toList()
 }
 ```
 
@@ -476,7 +477,7 @@ Major APIs
 * `tibble` - Data structures
 * `tidyr`  -  Data preparation
 * `dplyr`  -  Data manipulation
-* `purrr`  -  List Columns & nested tables
+* `purrr`  -  List Columns &amp; nested tables
 ]
 
 .pull-right[
@@ -497,7 +498,7 @@ r functions defined much more loose in terms argument types, not a simple one-2-
 
 From http://dplyr.tidyverse.org/articles/programming.html
 
-> Most dplyr functions use non-standard evaluation (NSE). This is a catch-all term that means they don't follow the usual R rules of evaluation. Instead, they capture the expression that you typed and evaluate it in a custom way.
+&gt; Most dplyr functions use non-standard evaluation (NSE). This is a catch-all term that means they don't follow the usual R rules of evaluation. Instead, they capture the expression that you typed and evaluate it in a custom way.
 
 Following slides 2 examples: gather + separate
 
@@ -610,12 +611,12 @@ val newDF = df.addColumn("full_name") { it["first_name"] + " " + it["last_name"]
 df.addColumn("user_id") { it["last_name"] + "_id" + rowNumber }
 
 //and provides convenience methods to ignore NAs
-df.addColumn("first_name_initial") { it["first_name"].map<String>{ it.first() } }
+df.addColumn("first_name_initial") { it["first_name"].map&lt;String&gt;{ it.first() } }
 
 // or add multiple columns at once
 df.addColumns(
     "age_plus3" to { it["age"] + 3 },
-    "initial" to { it["first_name"].map<String> { it.first() } }
+    "initial" to { it["first_name"].map&lt;String&gt; { it.first() } }
 )
 ```
 
@@ -680,7 +681,7 @@ df.filter({ it["last_name"].isMatching { startsWith("Do")  }})
 
 In case vectorized operations are not possible or available we can also filter tables by row which allows for scalar operators
 ```kotlin
-df.filterByRow { it["age"] as Int > 5 }
+df.filterByRow { it["age"] as Int &gt; 5 }
 df.filterByRow { (it["age"] as Int).rem(10) == 0 } // "round" birthdays :-)
 
 ```
@@ -759,7 +760,7 @@ either `=` or to will go away most likely
 ---
 # Type support - Part 1: Digest objects into attribute columns
 
-Cherry-pick properties with `Iterable<T>.deparseRecords`
+Cherry-pick properties with `Iterable&lt;T&gt;.deparseRecords`
 ```kotlin
 val deparsedDF = records.deparseRecords { mapOf(
     "age" to it.age, 
@@ -771,7 +772,7 @@ val deparsedDF = records.deparseRecords { mapOf(
 Be lazy and use reflection
 ```kotlin
 data class Person(val name:String, val age:Int)
-val persons :List<Person> = listOf(Person("Max", 23), Person("Anna", 43))
+val persons :List&lt;Person&gt; = listOf(Person("Max", 23), Person("Anna", 43))
 
 val personsDF: DataFrame = persons.asDataFrame() 
 personsDF
@@ -817,7 +818,7 @@ person	: [Any]	, [Person(name=Max, age=23), Person(name=Anna, age=43)]
 
 ```kotlin
 data class Person(val name:String, val age:Int)
-val persons :Iterable<Person> = listOf(Person("Max", 22), Person("Anna", 23))
+val persons :Iterable&lt;Person&gt; = listOf(Person("Max", 22), Person("Anna", 23))
 
 val df : DataFrame = dataFrameOf("person")(persons)
 
@@ -832,8 +833,8 @@ Expand properties of `person` into columns via reflection
 
 ```kotlin
 var personsDF = df.
-    unfold<Person>("person", keep=true) 
-    // unfold<Person>("person", select=listOf("age"))
+    unfold&lt;Person&gt;("person", keep=true) 
+    // unfold&lt;Person&gt;("person", select=listOf("age"))
     
 personsDF.names   
 ```
@@ -857,7 +858,7 @@ which makes krangl to __print__ the Kotlin data class schema for data frame:
 data class Iris(val sepalLength: Double, val sepalWidth: Double, val petalLength: Double, 
                 val petalWidth: Double, val species: String)
                 
-val records: Iterable<Iris> = irisData.rowsAs<Iris>()
+val records: Iterable&lt;Iris&gt; = irisData.rowsAs&lt;Iris&gt;()
 ```
 
 Paste it back into workflow code and continue with typed objects!
@@ -883,8 +884,8 @@ applicable for interactive workflow only
 #### Lists in table formulas cause operator confusion
 
 ```kotlin
-users.addColumn("age_plus_3") { it["user"].map<User> { it.age } + 3 } // extend list with 3
-users.addColumn("age_plus_3") { it["user"].map<User> { it.age + 3 } } // correct
+users.addColumn("age_plus_3") { it["user"].map&lt;User&gt; { it.age } + 3 } // extend list with 3
+users.addColumn("age_plus_3") { it["user"].map&lt;User&gt; { it.age + 3 } } // correct
 users.addColumn("age_plus_3") { it["age"] + 3 }   // works because `DataCol.plus` can be defined
 ```
 
@@ -893,7 +894,7 @@ users.addColumn("age_plus_3") { it["age"] + 3 }   // works because `DataCol.plus
 
 Some (`+`, `-`, `*`, `!`) can be overridden for collections, but others cannot (e.g. all arithmetic and boolean comparison ops)
 
-No vectorization for `>`,  `&&` `==`, etc. in table forumlas → Use function calls or not so pretty `gt`, `AND`, `eq`, etc.
+No vectorization for `&gt;`,  `&amp;&amp;` `==`, etc. in table forumlas → Use function calls or not so pretty `gt`, `AND`, `eq`, etc.
 
 
 --
@@ -909,7 +910,7 @@ dataFrame.summarize("mean_salary") { it["salaray"].mean }     // extension prope
 
 ???
 
-Don't overload `operator Any?.plus` --> Confusion
+Don't overload `operator Any?.plus` --&gt; Confusion
 
 https://kotlinlang.org/docs/reference/operator-overloading.html
 
@@ -931,7 +932,7 @@ Next steps
 * Performance (indices, avoid list and array copies, compressed columns)
 * Use dedicated return type for table formula helpers (like `mean`, `rank`) to reduce runtime errors
 * More bindings to other jvm data-science libraries
-* Better documentation & cheatsheets
+* Better documentation &amp; cheatsheets
 * `Sequence` vs `Iterable`?
 * Pluggable backends like native or SQL
 
@@ -948,7 +949,7 @@ class: middle, inverse
 ### Table Wrangling
 # Beyond Tables
 ### Data Visualization
-### Reporting & Notebooks
+### Reporting &amp; Notebooks
 
 
 ---
@@ -962,7 +963,7 @@ But still we want to do
 
 ### * Data Visualization
 ### * Statistics
-### * Regression & Classification
+### * Regression &amp; Classification
 
 
 --
@@ -995,7 +996,7 @@ Many options
 
 #### 1. Still no coherent `ggplot2` like framework with grammar for graphics
 
-> `layers` + `aesthetics` + `coordinates system` + `transformations` + ` facets`
+&gt; `layers` + `aesthetics` + `coordinates system` + `transformations` + ` facets`
 
 --
 
@@ -1066,7 +1067,7 @@ plotOf(projection.transpose().array().withIndex()) {
 
 
 ---
-# Regression & Classification: https://github.com/haifengl/smile
+# Regression &amp; Classification: https://github.com/haifengl/smile
 
 * **Classification** Support Vector Machines, Decision Trees, AdaBoost, Gradient Boosting, Random Forest, Logistic Regression, Neural Networks, RBF Networks, Maximum Entropy Classifier, KNN, Naïve Bayesian, Fisher/Linear/Quadratic/Regularized Discriminant Analysis.
 
@@ -1111,7 +1112,7 @@ val irisModel = irisData
         val xTransposed = MatrixUtils.createRealMatrix(arrayOf(x)).transpose().data
         SimpleRegression().apply { addObservations(xTransposed, y) }
     }
-    .unfold<SimpleRegression>("lm", properties = listOf("intercept", "slope"))
+    .unfold&lt;SimpleRegression&gt;("lm", properties = listOf("intercept", "slope"))
 ```
 ```
    Species                                                                   lm       slope   intercept
@@ -1129,7 +1130,7 @@ class: middle, inverse
 ### Table Wrangling
 ### Beyond Tables
 ### Data Visualization
-# Reporting & Notebooks
+# Reporting &amp; Notebooks
 
 
 ---
@@ -1137,7 +1138,7 @@ class: middle, inverse
 ## ![](images/project_jupyter.png)
 
 .left-column60[
-> Open-source web application that allows you to create and share
+&gt; Open-source web application that allows you to create and share
   documents that contain live code, equations, visualizations and narrative text.
 
 Pros
@@ -1149,7 +1150,7 @@ Pros
 Cons
 * Collaboration is tricky
 * Versioning and code reviews are hard
-* Webapp not a real IDE substitute -> JupyterLab
+* Webapp not a real IDE substitute -&gt; JupyterLab
 ]
 
 .right-column40[
@@ -1170,7 +1171,7 @@ https://unidata.github.io/online-python-training/introduction.html
 ---
 # Kotlin Notebooks?
 
-> A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
+&gt; A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
 
 Two competing kernels for Kotlin
 
@@ -1183,7 +1184,7 @@ Two competing kernels for Kotlin
 
 2. https://github.com/twosigma/beakerx
 
-    > a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
+    &gt; a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
 
     * Very active, fast progress
     * Friendly and very responsive developers
@@ -1210,16 +1211,16 @@ background-size: 95%
 
 # Literate programming: Turn code into reports
 
-Enable result consistency and streamline communication by <br>
+Enable result consistency and streamline communication by &lt;br&gt;
 building reports from code
 
 1. Develop data workflows interactively using plain and simple code
 2. Build reports embedding code and results
 
 
-Python:  markdown -> `notedown` + `nbconvert`
+Python:  markdown -&gt; `notedown` + `nbconvert`
 
-R: R scripts --> `spin` -> `knit` -> `pandoc`
+R: R scripts --&gt; `spin` -&gt; `knit` -&gt; `pandoc`
 
 --
 
@@ -1228,7 +1229,7 @@ R: R scripts --> `spin` -> `knit` -> `pandoc`
 
 ???
 
-R ->  (**Speakers choice!**)
+R -&gt;  (**Speakers choice!**)
 
 *  IDE markdown support very good
 *  Kotln code chunk support not usable
@@ -1268,22 +1269,22 @@ summarizeDf.print()
 
 
 ---
-# `kts->html` converter
+# `kts-&gt;html` converter
 
 ```bash
 inputScript=krangl_example_report.kts
 reportName=$(basename $inputScript .kts)
 
 # https://www.r-project.org/
-Rscript - ${inputScript} <<"EOF"
+Rscript - ${inputScript} &lt;&lt;"EOF"
 knitr::spin(commandArgs(T)[1], doc = "^//'[ ]?", knit=F)
 EOF
 
 # https://github.com/holgerbrandl/kscript
-kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd > ${reportName}.md
+kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd &gt; ${reportName}.md
 
 # https://github.com/aaren/notedown
-notedown ${reportName}.md > ${reportName}.ipynb
+notedown ${reportName}.md &gt; ${reportName}.ipynb
 
 # http://jupyter.org/install
 jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
@@ -1302,7 +1303,7 @@ Alternative approaches?
 
 ---
 
-<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
+&lt;a href="./krangl_example_report.html" rel="some text"&gt;![](images/kts_report.jpg)&lt;/a&gt;
 
 
 ???
@@ -1394,7 +1395,7 @@ class:  inverse
 
 --
 
-##### **Thanks to Kotlin and IDE team @JetBrains, github community, R/tidyverse community, <br>Scientific Computing Facility @ Max Planck Institute of Molecular Cell Biology and Genetics**
+##### **Thanks to Kotlin and IDE team @JetBrains, github community, R/tidyverse community, &lt;br&gt;Scientific Computing Facility @ Max Planck Institute of Molecular Cell Biology and Genetics**
 
 Slides Repo: https://github.com/holgerbrandl/kotlin4ds_kotlin_night_frankfurt
 
@@ -1402,4 +1403,54 @@ Slides Repo: https://github.com/holgerbrandl/kotlin4ds_kotlin_night_frankfurt
 
 `krangl` tries to bring pandas/dplyr to Kotlin
 
-Keep working with github community on [krangl](https://github.com/holgerbrandl/krangl), kravis & [kscript](https://github.com/holgerbrandl/kscript)
+Keep working with github community on [krangl](https://github.com/holgerbrandl/krangl), kravis &amp; [kscript](https://github.com/holgerbrandl/kscript)
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+    "ratio": "16:9",
+    "highlightStyle": "github",
+    "highlightLines": true,
+    "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+    window.dispatchEvent(new Event('resize'));
+});
+(function () {
+    var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+    if (!r) return;
+    s.type = "text/css";
+    s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height + "; }";
+    d.head.appendChild(s);
+})();</script>
+
+<script>
+    (function () {
+        var i, text, code, codes = document.getElementsByTagName('code');
+        for (i = 0; i < codes.length;) {
+            code = codes[i];
+            if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+                text = code.textContent;
+                if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+                    /^\$\$(.|\s)+\$\$$/.test(text) ||
+                    /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+                    code.outerHTML = code.innerHTML;  // remove <code></code>
+                    continue;
+                }
+            }
+            i++;
+        }
+    })();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+    (function () {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+        if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+            script.src = script.src.replace(/^https?:/, '');
+        document.getElementsByTagName('head')[0].appendChild(script);
+    })();
+</script>
+</body>
+</html>

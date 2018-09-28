@@ -1,3 +1,8 @@
+/*https://github.com/yihui/xaringan/wiki/Title-slide*/
+.title-slide .remark-slide-number {
+    display: none;
+}
+
 .full-width {
     background-size: auto 100%;
 }
