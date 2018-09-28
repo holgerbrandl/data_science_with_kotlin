@@ -57,3 +57,13 @@ steal from http://holgerbrandl.github.io/krangl/bier_slides_june2016/krangl_intr
 
 Pandas Examples:
 https://www.analyticsvidhya.com/blog/2016/01/12-pandas-techniques-python-data-manipulation/
+
+
+
+## remark
+
+hide with
+```
+exclude: true
+
+```

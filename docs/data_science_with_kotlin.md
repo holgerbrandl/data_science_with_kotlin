@@ -1,7 +1,7 @@
 ---
 title: "A wild ride through New York City"
 subtitle: "Building Data Science Workflows with Kotlin<br><br><img src='images/kotlin_conf_logo.png' width='400'>"
-author: "https://github.com/holgerbrandl - <a href='https://twitter.com/holgerbrandl'>@holgerbrandl</a>"
+author: "a<a href='https://twitter.com/holgerbrandl'>@holgerbrandl</a>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -1114,12 +1114,133 @@ versicolor   org.apache.commons.math3.stat.regression.SimpleRegression@7bfcd12c 
  virginica   org.apache.commons.math3.stat.regression.SimpleRegression@42f30e0a       0.2318      1.446
 ```
 
+
+---
+
+class: middle, inverse
+
+# Kotlin Stack for Data Science?
+
+### Interactive Shell
+### Tooling
+### Graphics Device
+### Libraries
+### Report Rendering & Notebook Support
+
+---
+
+background-image: url(images/ide_repl.jpg)
+background-position: bottom
+background-size: 95%
+
+---
+background-image: url(images/ide_repl_light.jpg)
+background-position: bottom
+background-size: 95%
+
+# IDE console and terminal REPL need more work
+
+
+
+
+* [KT-11409](https://youtrack.jetbrains.com/issue/KT-11409) Add action "Send Selection To Kotlin Console"
+
+* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: allow adding a library to the classpath
+
+* [KT-14851](https://youtrack.jetbrains.com/issue/KT-14851) "this" is always defined in Kotlin REPL
+
+* [KT-21224](https://youtrack.jetbrains.com/issue/KT-21224 ) Incorrect alignment of commands and outputs in REPL
+
+* [KT-13319](https://youtrack.jetbrains.net/issue/KT-13319) - REPL: support ":paste" for pasting multi-line expressions
+
+* https://youtrack.jetbrains.net/issues/KT?q=repl%20state:Open
+
+> ### Overall usability not yet en par with R or python shell
+
+
+---
+class: inverse
+
+# `khud/sparklin`
+
+.center[![](images/krangl_repo.png)]
+
+`sparklin` is a proof-of-concept software includes experimental new Kotlin REPL (aka `KShell`) which supports extensions and custom commands via plugin system.
+
+
+---
+# How to start a `kshell`?
+
+No proper launcher in repo yet, but meanwhile we can use [`kshell_kts.sh `](https://github.com/holgerbrandl/kscript/tree/master/misc/kshell_launcher)
+
+
+
+`krangl_example.kts`:
+
+```kotlin
+@file:DependsOn("com.offbytwo:docopt:0.6.0.20150202", "log4j:log4j:1.2.14")
+@file:DependsOn("de.mpicbg.scicomp:krangl:0.9.1")
+
+import krangl.sleepData             // ignored when spawning shell
+sleepData.select("total_sleep")     // ignored when spawning shell
+```
+
+Spawn your data-science shell with:
+```bash
+kshell_kts.sh krangl_example.kts
+```
+
+```bash
+Preparing interactive session by resolving script dependencies...
+[1] import krangl.*
+[2] irisData.schema()
+DataFrame with 150 observations
+Sepal.Length  [Dbl]  5.1, 4.9, 4.7, 4.6, 5, 5.4, 4.6, 5, 4.8, 4.8, 4.3, 5.8, 5.7, 5.4,...
+Sepal.Width   [Dbl]  3.5, 3, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 3.4, 3, 3, 4, 4.4, 3.9, 3.5...
+Petal.Length  [Dbl]  1.4, 1.4, 1.3, 1.5, 1.4, 1.7, 1.4, 1.5, 1.6, 1.4, 1.1, 1.2, 1.5, ...
+Petal.Width   [Dbl]  0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, ...
+Species       [Str]  setosa, setosa, setosa, setosa, setosa, setosa, setosa, setosa, s...
+[6] 
+```
+
+---
+
+background-image: url(images/push_to_repl.png)
+background-position: bottom
+background-size: 95%
+
+# How to send code to kshell?
+
+---
+# Using the plugin "Send to Terminal"
+
+.left-column60[
+https://github.com/holgerbrandl/send2terminal
+
+* Send current line or selection (default shortcut `meta alt ENTER`)
+
+* Send current and move focus to next line with expression (default shortcut `meta alt shift ENTER`)
+
+
+Kotlin aware expression detection + automatic imports
+
+Also works for great for python & R and anything else in Intellij.
+
+Just works on MacOS :-(
+]
+
+.right-column40[
+
+![](images/42adf44f.png)
+
+]
+
 ---
 class: middle, inverse
 
 ### Outline
 
-### Ingredients for data science?
+### Kotlin Stack for Data Science?
 ### Table Wrangling
 ### Beyond Tables
 ### Data Visualization
@@ -1334,13 +1455,6 @@ Almost.
 * [KT-11473](https://youtrack.jetbrains.com/issue/KT-11473) Allow debugging of Kotlin scripts
 
 --
-
-REPL needs more work
-
-* [KT-11409](https://youtrack.jetbrains.com/issue/KT-11409) Add action "Send Selection To Kotlin Console"
-* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: allow adding a library to the classpath
-* [KT-14851](https://youtrack.jetbrains.com/issue/KT-14851) "this" is always defined in Kotlin REPL
-* [KT-21224](https://youtrack.jetbrains.com/issue/KT-21224 ) Incorrect alignment of commands and outputs in REPL
 
 --
 

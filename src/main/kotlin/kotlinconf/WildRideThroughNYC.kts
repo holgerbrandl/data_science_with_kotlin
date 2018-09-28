@@ -1,7 +1,6 @@
 @file:MavenRepository("repo1", "https://jitpack.io")
 
 @file:DependsOn("com.github.holgerbrandl:kscript-annotations:1.2")
-@file:DependsOn("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 @file:DependsOn("de.mpicbg.scicomp:krangl:0.11-SNAPSHOT")
 @file:DependsOn("com.github.holgerbrandl:kravis:0.4-SNAPSHOT")
 @file:DependsOn("com.github.haifengl:smile-core:1.5.1")

@@ -1,6 +1,6 @@
 # Building Data Science Workflows with Kotlin
 
-### >> [slides](https://holgerbrandl.github.io/data_scicene_with_kotlin/data_scicene_with_kotlin.html) <<
+### >> [slides](https://holgerbrandl.github.io/data_scicene_with_kotlin/data_science_with_kotlin.html) <<
 
 
 ## Abstract
