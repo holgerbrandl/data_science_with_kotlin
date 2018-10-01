@@ -27,8 +27,11 @@ dataRoot.listFiles().forEach { println(it) }
 
 operator fun File.div(fileName: String) = this.resolve(fileName)
 
-//var trainData = DataFrame.readCSV(dataRoot / "train.csv")
-var trainData = DataFrame.readTSV(File("someTaxiRides.csv"))
+var allTrainData = DataFrame.readCSV(dataRoot / "train.csv")
+var trainData = allTrainData.sampleFrac(0.3)
+var testData = DataFrame.readCSV(dataRoot / "test.csv")
+
+//var trainData = DataFrame.readTSV(File("someTaxiRides.csv"))
 
 trainData.schema()
 
@@ -62,26 +65,51 @@ trainData.schema()
 
 trainData["vendor_id"]
 
-// pull in data description
 
+
+fun prepareFeatures(nycFeatures: DataFrame): DataFrame {
+    var trainData = nycFeatures
+    val datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    trainData = trainData.addColumns(
+        pickup_datetime to { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
+    )
+//toto join with weather data
+// 4 feature engineering
+    /** The distance of the trip in m*/
+    val distance = "dist"
+
+    trainData = trainData.addColumn(distance) { df ->
+        val longDist = df[pickup_longitude] - df[dropoff_longitude]
+        val latDist = df[pickup_latitude] - df[dropoff_latitude]
+        (longDist * longDist + latDist * latDist).asDoubles().map { Math.sqrt(it!!) }
+    }
+
+    trainData = trainData.addColumns(
+        "month" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
+        "month" to { it[pickup_datetime].map<LocalDateTime>() { it.month } },
+        "wday" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
+        "hour" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
+        "work" to { it["hour"].map<Int> { (8..18).contains(it) } },
+        "speed" to { it[distance] / it[trip_duration] * 3.6 }
+    )
+
+    return trainData
+}
+
+
+//
+// do some visual inspection
+//
 
 
 //trainData.plot(trip_duration).geomHistogram()
-trainData.filter{ it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHistogram()
+trainData.filter { it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHistogram()
 
 trainData.count(passenger_count)
     .plot(x = passenger_count.asDiscreteVariable, y = "n")
     .geomBar(stat = Stat.identity)
     .xLabel("# Passengers")
 
-
-
-val datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
-trainData = trainData.addColumns(
-    pickup_datetime to { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
-)
-trainData.schema()
 
 fun DataFrame.constrainCoord(): DataFrame = filter {
     with(it[pickup_longitude]) { (this gt -74.1) AND (this lt -73.7) } AND
@@ -95,56 +123,101 @@ trainData
 
 
 
-//join with weather data
+//
+// build a model with xgboost
+//
 
-// 4 feature engineering
-
-
-/** The distance of the trip in m*/
-val distance = "dist"
-
-trainData = trainData.addColumn(distance) { df ->
-    val longDist = df[pickup_longitude] - df[dropoff_longitude]
-    val latDist = df[pickup_latitude] - df[dropoff_latitude]
-    (longDist * longDist + latDist * latDist).asDoubles().map { Math.sqrt(it!!) }
-}
-
-trainData = trainData.addColumns(
-    "month" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
-    "month" to { it[pickup_datetime].map<LocalDateTime>() { it.month } },
-    "wday" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
-    "hour" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
-    "work" to { it["hour"].map<Int> { (8..18).contains(it) } },
-    "speed" to { it[distance] / it[trip_duration] * 3.6 }
-)
-
-
+val trainFeat = prepareFeatures(trainData)
+val testFeat = prepareFeatures(testData)
 trainData.schema()
 
-// build a model with xgboost
-val trainMat = DMatrix("agaricus.txt.test")
-val testMat = DMatrix("agaricus.txt.train")
+
+fun Array<DoubleArray>.toFloatMatrix(): Array<FloatArray> = map { it.map { it.toFloat() }.toFloatArray() }.toTypedArray()
+
+
+val x = irisData.remove("Species", "Petal.Length").toDoubleMatrix().toFloatMatrix()
+val xLong: FloatArray = x.reduce { left, right -> left + right }
+val y = irisData["Petal.Length"].asType<Double>().map { it!!.toFloat() }.toFloatArray()
+
+//val trainMat = DMatrix("agaricus.txt.test")
+val trainMat = DMatrix(xLong, trainFeat.nrow, trainFeat.nrow)
+trainMat.label = y
+
+
+//val testMat = DMatrix("agaricus.txt.train")
 //val validMat = DMatrix("valid.svm.txt") // todo where is this one?
 
+val params = hashMapOf<String, Any>().apply {
+    //    put("colsample_bytree", 0.4)
+//    put("gamma", 0)
+//    put("learning_rate", 0.07)
+//    put("min_child_weight", 1.5)
+//    put("eta", 1.0)
+//    put("max_depth", 3)
+//    put("silent", 1)
+    put("objective", "reg:linear")
+    put("eval_metric", "rmse")
+}
 
 // https://www.kaggle.com/fashionlee/using-xgboost-for-regression
 //our_params={'eta':0.1,'seed':0,'subsample':0.8,'colsample_bytree':0.8,'objective':'reg:linear','max_depth':3,'min_child_weight':1}
-val params = hashMapOf<String, Any>().apply {
-    put("eta", 1.0)
-    put("max_depth", 2)
-    put("silent", 1)
-    put("objective", "reg:linear")
-//    put("eval_metric", "logloss")
-}
+
+
+//https://www.kaggle.com/pablocastilla/predict-house-prices-with-xgboost-regression
+//xgboost.XGBRegressor(colsample_bytree=0.4, gamma=0, learning_rate=0.07, max_depth=3, min_child_weight=1.5, n_estimators=10000, reg_alpha=0.75, reg_lambda=0.45, subsample=0.6, seed=42)
+
+// https://stackoverflow.com/questions/33209391/how-to-use-xgboost-algorithm-for-regression-in-r
 
 // Specify a watch list to see model accuracy on data sets
-val data = hashMapOf<String, DMatrix>().apply {
+//our_params={'eta':0.1,'seed':0,'subsample':0.8,'colsample_bytree':0.8,'objective':'reg:linear','max_depth':3,'min_child_weight':1}
+
+val watches = hashMapOf<String, DMatrix>().apply {
     put("train", trainMat)
-    put("test", testMat)
+//    put("test", testMat)
 }
 
-val xgbModel = XGBoost.train(trainMat, params, 2, data, null, null)
+// number of boosting iteration =3 would just build a simple 2-step function model
+val nround = 10
+val booster = XGBoost.train(trainMat, params, nround, watches, null, null)
 
+
+// build feature map
+// https://stackoverflow.com/questions/37627923/how-to-get-feature-importance-in-xgboost
+// dump with feature map
+//        booster.getFeatureScore()
+//        booster.imp
+val model_dump_with_feature_map = booster.getModelDump("featmap.txt", false)
+
+//        predict on test set
 //var dtest = DMatrix("test.svm.txt")
-var predicts = xgbModel.predict(testMat)
+// predict
+var predicts = booster.predict(trainMat)
+//unwrap
+val predictUnwrapped = predicts.map { it.first() }
 
+//https://www.kaggle.com/fashionlee/using-xgboost-for-regression
+//from sklearn.metrics import mean_squared_error
+//    import math
+//    testScore=math.sqrt(mean_squared_error(y_test.values,y_pred))
+//print(testScore)
+
+predicts.joinToString(",")
+predicts.first().joinToString(",")
+
+predicts.size
+
+trainData = trainData.addColumn("predicted_pet_length") { predictUnwrapped }
+
+
+trainData.plot(x = "Petal.Length", y = "predicted_pet_length").geomPoint()
+
+
+booster.getFeatureScore(null)
+
+
+//
+// prepare submission file
+//
+
+
+//https://www.kaggle.com/michaelpawlus/xgboost-example-0-76178/code
