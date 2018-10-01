@@ -65,6 +65,17 @@
     float: right;
 }
 
+/*https://github.com/gnab/remark/issues/236*/
+.left-column70 {
+    width: 65%;
+    float: left;
+}
+
+.right-column30 {
+    width: 30%;
+    float: right;
+}
+
 /*fix printing, see https://github.com/gnab/remark/issues/50*/
 @page {
     size: 1210px 681px;

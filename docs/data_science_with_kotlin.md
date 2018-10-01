@@ -55,20 +55,17 @@ background-size: 90%
 # Can we do data science with Kotlin?
 
 
-Is the language suited for data science?
+Are the language and tooling suited and ready for data science?
 
-#### Can we express typical data and workflows?
-
-Are the ingredients ready to do data-science with Kotlin?
-
-#### Is there an interactive shell?
-#### How to build reports & Notebook Support?
-#### How to manipulation typed and untyped data?
-#### How to do data visualization?
+### Can we express typical data problems and workflows?
+### Is there an interactive shell?
+### How to manipulation typed and untyped data?
+### How to do data visualization?
+### How to build reports & Notebook Support?
 
 --
 
-### So can we?  We wont' know without trying!
+## So can we?  We wont' know without trying!
 
 ???
 
@@ -397,7 +394,7 @@ Two competing kernels for Kotlin
     * More established
     * Backed by JB
     * Friendly and responsive developers
-    * Not really active
+    * Slow development process
 
 2. https://github.com/twosigma/beakerx
 
@@ -498,15 +495,24 @@ Major APIs
 
 
 * [tablesaw](https://github.com/jtablesaw/tablesaw) which is (according to its authors) the _The simplest way to slice data in Java_
+
 * [Scala DataTable](https://github.com/martincooper/scala-datatable): a lightweight, in-memory table structure written in Scala
+
 * [kotliquery](https://github.com/seratch/kotliquery) is a handy database access library
+
 * [koma](https://kyonifer.github.io/koma/) is a scientific computing library written in Kotlin
+
 * [joinery](https://github.com/cardillo/joinery) implements data frames for Java
+
 * [paleo](https://github.com/netzwerg/paleo) which provides immutable Java 8 data frames with typed columns
+
 * [morpheus-core](https://github.com/zavtech/morpheus-core) which is a data science framework implementing an R-like data-frame for the JVM
+
 * [vectorz](https://github.com/mikera/vectorz) is a fast and flexible numerical library for Java featuring N-dimensional arrays
+
 * [termsql](https://github.com/tobimensch/termsql) converts text from a file or from stdin into SQL table using sqlite and query it instantly
-* [Dex : The Data Explorer](https://github.com/PatMartin/Dex) is a data visualization tool written capable of powerful ETL and reporting
+
+> ### Great stuff, but not feature-complete enough, maintained or _kotlinesque_ as needed for fluency and fun with data
 
 
 ---
@@ -667,7 +673,7 @@ From http://dplyr.tidyverse.org/articles/programming.html
 Following slides 2 examples: gather + separate
 
 ---
-# Example: Reshape Tables from Long to Wide
+# Example: Reshape Tables from Wide To Long
 
 ```kotlin
 val climate = dataFrameOf(
@@ -919,8 +925,8 @@ Do they allow for convenient fluent data-vis?
 
 --
 
-#### 1. Still no coherent `ggplot2` like framework with grammar for graphics
-#### 2. JVM graphics device project that works from Kotlin REPL, in Intellij, and in jupyter notebooks
+### 1. Still no coherent `ggplot2` like framework with grammar for graphics
+### 2. JVM graphics device project that works from Kotlin REPL, in Intellij, and in jupyter notebooks
 
 
 ---
@@ -933,16 +939,12 @@ background-size: 100%
 class: middle, center
 
 The grammar of graphics (Leland Wilkinson, 2005)
->#### `aesthetics` + `layers`  + `coordinates system` + `transformations` + ` facets`
-
---
-
+# `plot` :=
+## `aesthetics` + `layers`  + <br>`coordinates system` + `transformations` + ` facets`
 
 ???
 
 `one or more layers` + `map variables from data space to visual space` + `coordinates system` + `statistical transformations` + `optional facets`
-
-
 
 ---
 class: inverse
@@ -1031,6 +1033,57 @@ sleepPatterns
 
 
 ---
+background-image: url(images/pca_background.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
+
+# Perform a PCA Analaysis
+
+Using `krangl` + `kravis` +  https://github.com/haifengl/smile
+
+.left-column60[
+
+
+```kotlin
+val irisArray = irisData.remove("Species")
+    .toDoubleMatrix().transpose()
+val pca = smile.projection.PCA(irisArray)
+
+// variance proportions
+pca.varianceProportion.toList().withIndex()
+    .plot(x={ it.index}, y = {it.value})
+    .geomCol()
+    .yLabel("% Variance Explained")
+
+val rotData = pca.project(irisArray)
+
+// PC1 vs PC2 scatter
+rotData.zip(irisData["Species"].asStrings())
+    .plot(x={
+        it.first[0]}, 
+        y={it.first[1]}, color = {it.second}
+    )
+    .geomPoint()
+```
+
+]
+
+.right-column40[
+
+
+]
+
+
+???
+
+```
+fun Array<out DoubleArray>.transpose(): Array<out DoubleArray>? = 
+    JMatrix(this).transpose().array()
+
+
+```
+---
 # Regression & Classification: https://github.com/haifengl/smile
 
 * **Classification** Support Vector Machines, Decision Trees, AdaBoost, Gradient Boosting, Random Forest, Logistic Regression, Neural Networks, RBF Networks, Maximum Entropy Classifier, KNN, Naïve Bayesian, Fisher/Linear/Quadratic/Regularized Discriminant Analysis.
@@ -1057,38 +1110,6 @@ https://deeplearning4j.org/
 kotlin examples
 
 https://github.com/deeplearning4j/dl4j-examples/blob/master/dl4j-examples/src/main/kotlin/org/deeplearning4j/examples/feedforward/mnist/MLPMnistSingleLayerExample.kt
-
-
----
-# `krangl` + `kravis` + `smile`
-
-
-```kotlin
-fun Array<out DoubleArray>.transpose(): Array<out DoubleArray>? = 
-    JMatrix(this).transpose().array()
-
-val irisArray = irisData.remove("Species").toDoubleMatrix().transpose()
-
-val pca = smile.projection.PCA(irisArray)
-
-//barchart
-pca.varianceProportion.toList().withIndex()
-    .plot(x={ it.index}, y = {it.value})
-    .geomCol()
-    .yLabel("% Variance Explained")
-
-//val projection = pca.setProjection(2).projection
-val rotData = pca.project(irisArray)
-
-// PC1 vs PC2 scatter
-rotData.zip(irisData["Species"].asStrings())
-    .plot(x={it.first[0]}, y={it.first[1]}, color = {it.second})
-    .geomPoint()
-```
----
-class: middle, center
-
-![](images/iris_pca.png)
 
 
 ---
@@ -1153,11 +1174,11 @@ class:  inverse
 
 ### _Yes we can_ build predictive models using Kotlin. There's a fascinating JVM data science ecosystem out there, ready to be unleashed on your data
 
-###  `krangl` is a {K}otlin library for data w{rangl}ing. It allows to filter, transform, aggregate and reshape tabular data.
+###  `krangl` is a {K}otlin library for data w{rangl}ing. It allows to filter, transform, aggregate and reshape tabular data
 
-### `kravis` implements a convenient DSL to create a wide range of plots using a standardized set of verbs.
+### `kravis` implements a convenient DSL to create a wide range of plots using a standardized set of verbs
 
-### Tooling and libarires is still evolving!
+### Tooling and Libraries are still evolving!
 
 ##### **Thanks to Kotlin and IDE team @JetBrains, github community, R/tidyverse community, <br>Scientific Computing Facility @ Max Planck Institute of Molecular Cell Biology and Genetics**
 
