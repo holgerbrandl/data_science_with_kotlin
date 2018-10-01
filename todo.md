@@ -1,3 +1,9 @@
+## Feedback
+
+* use just nyc for examples
+* incrementally do interactive stuff
+* cut away tech-slides (just mention them)
+* jupyter before converter **{done}**
 
 ## ToDo
 
@@ -9,6 +15,11 @@
 * purge import buffer for send-to-console hotykey
 
 * provide more row-iterator api in krangl (see https://haifengl.github.io/smile/data.html_
+Kotlin Stack for Data Science
+=============================
+
+<br />
+
 
 https://www.kaggle.com/c/google-analytics-customer-revenue-prediction/?utm_medium=email&utm_source=intercom&utm_campaign=comp-launch-20180912
 

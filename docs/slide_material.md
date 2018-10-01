@@ -440,3 +440,135 @@ dataFrame.summarize("mean_salary") { it["salaray"].mean }     // extension prope
 Don't overload `operator Any?.plus` --> Confusion
 
 https://kotlinlang.org/docs/reference/operator-overloading.html
+
+
+
+---
+
+background-image: url(images/push_to_repl.png)
+background-position: bottom
+background-size: 95%
+
+# How to send code to from IDE to `kshell`?
+
+---
+# Using the plugin "Send to Terminal"
+
+.left-column60[
+https://github.com/holgerbrandl/send2terminal
+
+* Send current line or selection (default shortcut `meta alt ENTER`)
+
+* Send current and move focus to next line with expression (default shortcut `meta alt shift ENTER`)
+
+
+Kotlin aware expression detection + automatic imports
+
+Auto-jump to next expression
+
+Also works for great for python, R & bash and anything else in Intellij.
+
+Just works well on MacOS :-(
+]
+
+.right-column40[
+
+![](images/42adf44f.png)
+
+]
+
+
+---
+# Type support - Part 3: Let krangl define the schema
+
+
+Infer a schema with
+
+```kotlin
+irisData.printDataClassSchema("Iris")
+```
+which makes krangl to __print__ the Kotlin data class schema for data frame:
+
+```kotlin
+data class Iris(val sepalLength: Double, val sepalWidth: Double, val petalLength: Double, 
+                val petalWidth: Double, val species: String)
+                
+val records: Iterable<Iris> = irisData.rowsAs<Iris>()
+```
+
+Paste it back into workflow code and continue with typed objects!
+
+```kotlin
+records.take(1)
+```
+
+```
+[ Iris(sepalLength=5.1, sepalWidth=3.5, petalLength=1.4, petalWidth=0.2, species=setosa) ]
+```
+
+???
+
+grand finale
+
+applicable for interactive workflow only
+
+---
+# Use Object Columns for `Any`thing
+
+Expand properties of `person` into columns via reflection
+
+
+```kotlin
+data class Person(val name:String, val age:Int)
+
+val persons :Iterable<Person> = listOf(Person("Max", 22), Person("Anna", 23))
+
+val df : DataFrame = dataFrameOf("person")(persons)
+
+
+var personsDF = df. unfold<Person>("person", keep=true) 
+    // unfold<Person>("person", select=listOf("age"))
+    
+personsDF.schema()   
+```
+
+```
+DataFrame with 2 observations
+person  [Person]  Person(name=Max, age=22), Person(name=Anna, age=23)
+age     [Int]     22, 23
+name    [Str]     Max, Anna
+```
+
+???
+
+similar to `separate()` but for object columns
+
+
+---
+# Regression & Classification: https://github.com/haifengl/smile
+
+* **Classification** Support Vector Machines, Decision Trees, AdaBoost, Gradient Boosting, Random Forest, Logistic Regression, Neural Networks, RBF Networks, Maximum Entropy Classifier, KNN, Naïve Bayesian, Fisher/Linear/Quadratic/Regularized Discriminant Analysis.
+
+* **Regression** Support Vector Regression, Gaussian Process, Regression Trees, Gradient Boosting, Random Forest, RBF Networks, OLS, LASSO, Ridge Regression.
+
+* **Feature Selection** Genetic Algorithm based Feature Selection, Ensemble Learning based Feature Selection, Signal Noise ratio, Sum Squares ratio.
+
+* **Clustering** BIRCH, CLARANS, DBScan, DENCLUE, Deterministic Annealing, K-Means, X-Means, G-Means, Neural Gas, Growing Neural Gas, Hierarchical Clustering, Sequential Information Bottleneck, Self-Organizing Maps, Spectral Clustering, Minimum Entropy Clustering.
+
+* **Manifold learning** IsoMap, LLE, Laplacian Eigenmap, t-SNE, PCA, Kernel PCA, Probabilistic PCA, GHA, Random Projection, MDS
+
+* **Nearest Neighbor Search** BK-Tree, Cover Tree, KD-Tree, LSH.
+
+* **Sequence Learning** Hidden Markov Model, Conditional Random Field.
+
+* **Natural Language Processing** Tokenizer, Keyword Extractor, Stemmer, POS Tagging, Relevance Ranking
+
+???
+
+
+https://deeplearning4j.org/
+
+kotlin examples
+
+https://github.com/deeplearning4j/dl4j-examples/blob/master/dl4j-examples/src/main/kotlin/org/deeplearning4j/examples/feedforward/mnist/MLPMnistSingleLayerExample.kt
+

@@ -13,17 +13,6 @@ output:
       countIncrementalSlides: false
 ---
 
-class: middle, inverse
-
-# Kotlin Stack for Data Science
-
-### Interactive Shell
-### Report Rendering & Notebook Support
-### Manipulation of typed and untyped data
-### Data Visualization
-
-
----
 # The data-scien[ce|tists] life cycle
 
 .center[![](images/data_science_lifecycle.png)]
@@ -90,10 +79,6 @@ https://www.kaggle.com/c/nyc-taxi-trip-duration/
 
 # Predict NYC Taxi Trip Durations with Kotlin
 
---
-
-# NOW!
-
 
 ???
 
@@ -105,40 +90,43 @@ class: middle, inverse
 
 # Kotlin Stack for Data Science
 
-### Interactive Shell
-### Report Rendering & Notebook Support
+## Interactive Shell
 ### Manipulation of typed and untyped data
 ### Data Visualization
+### Report Rendering & Notebook Support
+
 
 ---
 
-background-image: url(images/ide_repl.jpg)
-background-position: bottom
-background-size: 95%
-
----
-background-image: url(images/ide_repl_light.jpg)
-background-position: bottom
-background-size: 95%
 
 # IDE console and terminal REPL need more work
 
 
+.left-column50[
 
 
 * [KT-11409](https://youtrack.jetbrains.com/issue/KT-11409) Add action "Send Selection To Kotlin Console"
 
-* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: allow adding a library to the classpath
-
-* [KT-14851](https://youtrack.jetbrains.com/issue/KT-14851) "this" is always defined in Kotlin REPL
+* [KT-7100](https://youtrack.jetbrains.com/issue/KT-7100) REPL: Allow adding a library to the classpath
 
 * [KT-21224](https://youtrack.jetbrains.com/issue/KT-21224 ) Incorrect alignment of commands and outputs in REPL
 
 * [KT-13319](https://youtrack.jetbrains.net/issue/KT-13319) - REPL: support ":paste" for pasting multi-line expressions
 
-* Many more https://youtrack.jetbrains.net/issues/KT?q=repl%20state:Open
 
 > ### Overall usability not yet _en par_ with R or python
+
+]
+
+
+
+
+.right-column50[
+
+![](images/ide_repl.jpg)
+]
+
+
 
 ???
 
@@ -165,8 +153,8 @@ No proper launcher in repo yet, but meanwhile we can use [`kshell_kts.sh `](http
 `krangl_example.kts`:
 
 ```kotlin
-@file:DependsOn("com.offbytwo:docopt:0.6.0.20150202", "log4j:log4j:1.2.14")
-@file:DependsOn("de.mpicbg.scicomp:krangl:0.9.1")
+@file:DependsOn("com.offbytwo:docopt:0.6.0.20150202")
+@file:DependsOn("de.mpicbg.scicomp:krangl:0.10.2")
 
 import krangl.sleepData             // ignored when spawning shell
 sleepData.select("total_sleep")     // ignored when spawning shell
@@ -192,250 +180,22 @@ Species       [Str]  setosa, setosa, setosa, setosa, setosa, setosa, setosa, set
 
 ---
 
-background-image: url(images/push_to_repl.png)
-background-position: bottom
-background-size: 95%
-
-# How to send code to from IDE to `kshell`?
-
----
-# Using the plugin "Send to Terminal"
-
-.left-column60[
-https://github.com/holgerbrandl/send2terminal
-
-* Send current line or selection (default shortcut `meta alt ENTER`)
-
-* Send current and move focus to next line with expression (default shortcut `meta alt shift ENTER`)
-
-
-Kotlin aware expression detection + automatic imports
-
-Auto-jump to next expression
-
-Also works for great for python, R & bash and anything else in Intellij.
-
-Just works well on MacOS :-(
-]
-
-.right-column40[
-
-![](images/42adf44f.png)
-
-]
-
----
-
 class: middle, inverse
 
 # Kotlin Stack for Data Science
 
 ### Interactive Shell
-## Report Rendering & Notebook Support
-### Manipulation of typed and untyped data
-### Data Visualization
-
----
-
-background-image: url(images/spin_workflow.jpg)
-background-position: bottom
-background-size: 95%
-
-# How to convert Kotlin to HMTL?
-
-Aka _Literate Programming_
-> Build reports including source code, results, and  <br>visualzation from __code__
-
-* `python`:  markdown -> `notedown` + `nbconvert`
-* `r` script --> `knitr::spin` -> `knit` -> `pandoc`
-
---
-
-
- #  `kts` -> **????** --> html
-
-
-???
-
-R ->  (**Speakers choice!**)
-
-*  IDE markdown support very good
-*  Kotln code chunk support not usable
-
-## Can we do this with Kotlin?
-
----
-exclude: true
-
-```kotlin
-//' ## Flowers Analysis
-
-//' The iris flower
-//' ![](https://goo.gl/tTbZMq)
-
-@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
-@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
-
-import krangl.*
-
-
-
-//' The first records in the input data (which is bundled with krangl) are
-irisData
-
-//' The structure of the input data is
-irisData.glimpse()
-
-//' Calculate mean petal
-val summarizeDf: DataFrame = irisData
-    .groupBy("Species")
-    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
-
-//' Print the summarized data
-summarizeDf.print()
-
-//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
-```
-
-
----
-
-# Yes we can, `kts`->`markdown`->`jupyter`->`html`
-
-```bash
-inputScript=krangl_example_report.kts
-reportName=$(basename $inputScript .kts)
-
-# https://www.r-project.org/
-Rscript - ${inputScript} <<"EOF"
-knitr::spin(commandArgs(T)[1], doc = "^//'[ ]?", knit=F)
-EOF
-
-# https://github.com/holgerbrandl/kscript
-kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd > ${reportName}.md
-
-# https://github.com/aaren/notedown
-notedown ${reportName}.md > ${reportName}.ipynb
-
-# http://jupyter.org/install
-jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
-        --execute --to html ${reportName}.ipynb --output ${reportName}
-```
-
-Proof-of-Concept, until kernel has evolved ( [type handlers](https://github.com/ligee/kotlin-jupyter/issues/12) + multiple cell outputs)
-
-
-???
-
-the geeky corner
-
-All but the last step could be reworked into a standalone tool.
-
-Alternative approaches?
-
----
-exclude: true
-
-<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
-
-
-???
-
-Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
-
-What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
-
-... Kidding:
-
----
-
-## ![](images/project_jupyter.png)
-
-.left-column60[
-> Open-source web application that allows you to create and share
-  documents that contain live code, equations, visualizations and narrative text.
-
-Pros
-* Fast prototyping
-* Literate Programming
-* Great Narrative
-* Shareable insights without build process
-
-Cons
-* Collaboration is tricky
-* Versioning and code reviews are hard
-* Webapp not a real IDE substitute -> JupyterLab
-]
-
-.right-column40[
-![](images/d2013656.png)
-
-]
-
-???
-
-Very popular framework that is "Super-Charging Data Science"
-
-
-
-https://www.quora.com/What-are-the-pros-and-cons-of-using-Python-Jupyter-versus-a-normal-Python-development-environment
-
-https://unidata.github.io/online-python-training/introduction.html
-
----
-# Kotlin Notebooks?
-
-> A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
-
-Two competing kernels for Kotlin
-
-1. https://github.com/ligee/kotlin-jupyter
-
-    * More established
-    * Backed by JB
-    * Friendly and responsive developers
-    * Slow development process
-
-2. https://github.com/twosigma/beakerx
-
-    > a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
-
-    * Very active, fast progress
-    * Friendly and very responsive developers
-    * Not __just__ a kernel
-    * Display handler registry in kernel `krangl.beakerx.TableDisplayer.register()`
-
-???
-
-beakerx: adapaters for tablesaw https://github.com/jtablesaw/tablesaw/tree/master/beakerx and morpheus
-
----
-
-![](images/kotlin_notebook_example.png)
-
-???
-
-Definietly cool, but lacks effieciency because of missing tooling (error checking, compeltion, refactoring)
-
----
-
-class: middle, inverse
-
-# Kotlin Stack for Data Science
-
-### Interactive Shell
-### Report Rendering & Notebook Support
 ## Manipulation of typed and untyped data
 ### Data Visualization
-
+### Report Rendering & Notebook Support
 
 ---
-# _Just use the Kotlin stdlib_ (a classic hacker)
+# What about Kotlin stdlib?
 
-* `map`, `fold`, `filter`, `reduce` are cool and fun
-* Useful IO utilities like `File.readLines()`
-* Great string manipulation helpers
 * Great collection API
+* * Useful IO utilities like `File.readLines()`
+* `map`, `fold`, `filter`, `reduce` are cool and fun
+* Great string manipulation helpers
 * Grouping API
 
 ```kotlin
@@ -451,11 +211,11 @@ groupingBy.eachCount()
 users.groupingBy { listOf(it.age, it.hasSudo) }.map{  ... }.fold{ ... }
 ```
 
-More advanced slicing possible with https://github.com/thomasnield/kotlin-statistics
-
-### Still, not enough to implement DS life cycle!
+### No enough to implement data science life cycle!
 
 ???
+
+More advanced slicing possible with https://github.com/thomasnield/kotlin-statistics
 
 so apart from the amazing language spec, what is in the stdlib for data science
 
@@ -471,23 +231,37 @@ for details see https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/
 
 > 90% of Data Science is *just* table integration!
 
-Data model, `readCSV`, `addColumn`, `select`...  What else do we need?
+What are the essential verbs to manipulate tables? Learn from the best, learn from the **[`R::tidyverse`](https://www.tidyverse.org/)**!
+
 
 .pull-left[
-* Learn from the best.. Learn from the **[`tidyverse`](https://www.tidyverse.org/)**!
+`tibble` - Data structures
 
-* Supported and condensed into amazing [cheatsheets](https://www.rstudio.com/resources/cheatsheets/) by [rstudio](https://www.rstudio.com/)
+`tidyr`  -  Data preparation
 
-Major APIs
-* `tibble` - Data structures
-* `tidyr`  -  Data preparation
-* `dplyr`  -  Data manipulation
-* `purrr`  -  List Columns & nested tables
+`purrr`  -  List Columns & nested tables
+
+
+`dplyr`  - Data manipulation with _5+1_ verbs
+* Select columns with `select()`
+* Inspect subsets of data with `filter()`
+* Add new columns with `mutate()`
+* Reorder rows with `arrange()`
+* Summarise records with `summarise()`
+* Perform grouped operations after `group_by()`
+
 ]
 
 .pull-right[
 ![](images/tidyverse.png)
 ]
+
+
+???
+* Supported and condensed into amazing [cheatsheets](https://www.rstudio.com/resources/cheatsheets/) by [rstudio](https://www.rstudio.com/)
+
+
+Data model, `readCSV`, `addColumn`, `select`...  What else do we need? How to design a fluent DSL/API?
 
 
 ---
@@ -566,7 +340,7 @@ Def from https://github.com/mobileink/data.frame/wiki/What-is-a-Data-Frame%3F
 # Get your data into krangl
 
 
-Read from tsv, csv, json, jdbc, e.g.
+Define tables inline
 ```kotlin
 val users = dataFrameOf(
     "firstName", "lastName", "age", "hasSudo")(
@@ -574,21 +348,19 @@ val users = dataFrameOf(
     "eva", "miller", 23, true,
     null , "meyer" , 23, null)
  
+```
+
+Read & write from tsv, csv, json, jdbc, etc.
+
+``` kotlin
 val tornados = DataFrame.readCSV(pathAsStringFileOrUrl)
+// do stuff
 tornados.writeCSV(File("tornados.txt.gz"))
 ```
 
 * Guess column types & default parameters
 * Built-in missing value support
 
-Convert any iterable into a data-frame via extension function + reflection
-
-```kotlin
-data class Person(val name:String, val address:String)
-val persons : List<Person> = ...
-
-val personsDF: DataFrame = persons.asDataFrame() 
-```
 
 ???
 
@@ -775,99 +547,36 @@ assess if it would by any fun to work with such an API!
 
 
 ---
-# Type support - Part 1: Digest objects into attribute columns
+# Ingest `Any`thing into tables
 
-Deparse `Iterable` into data frames with `Iterable<T>.deparseRecords`
 
-```kotlin
-val deparsedDF : DataFrame = records.deparseRecords { mapOf(
-    "age" to it.age, 
-    "weight" to it.mean_weight
-) }
+Convert any `Iterable<T>` into a data-frame via extension function
 
-```
-
-Or be lazy and use reflection
 ```kotlin
 data class Person(val name:String, val age:Int)
 
 val persons :List<Person> = listOf(Person("Max", 23), Person("Anna", 43))
 
 val personsDF: DataFrame = persons.asDataFrame() 
-personsDF
+personsDF.print()
 ```
 
-```
+```text
 age   name
  23   Max
  43   Anna
 ```
 
----
-# Type support - Part 2: Object Columns for `Any`thing
 
-Expand properties of `person` into columns via reflection
-
+Or deparse `Iterable<T>`s into data frames with `Iterable<T>.deparseRecords`
 
 ```kotlin
-data class Person(val name:String, val age:Int)
-
-val persons :Iterable<Person> = listOf(Person("Max", 22), Person("Anna", 23))
-
-val df : DataFrame = dataFrameOf("person")(persons)
-
-
-var personsDF = df. unfold<Person>("person", keep=true) 
-    // unfold<Person>("person", select=listOf("age"))
-    
-personsDF.schema()   
+val deparsedDF : DataFrame = persons.deparseRecords { mapOf(
+    "User Name" to it.name, 
+    "User Age" to it.age
+) }
 ```
 
-```
-DataFrame with 2 observations
-person  [Person]  Person(name=Max, age=22), Person(name=Anna, age=23)
-age     [Int]     22, 23
-name    [Str]     Max, Anna
-```
-
-???
-
-similar to `separate()` but for object columns
-
-
----
-# Type support - Part 3: Let krangl define the schema
-
-
-Infer a schema with
-
-```kotlin
-irisData.printDataClassSchema("Iris")
-```
-which makes krangl to __print__ the Kotlin data class schema for data frame:
-
-```kotlin
-data class Iris(val sepalLength: Double, val sepalWidth: Double, val petalLength: Double, 
-                val petalWidth: Double, val species: String)
-                
-val records: Iterable<Iris> = irisData.rowsAs<Iris>()
-```
-
-Paste it back into workflow code and continue with typed objects!
-
-```kotlin
-records.take(1)
-```
-
-```
-[ Iris(sepalLength=5.1, sepalWidth=3.5, petalLength=1.4, petalWidth=0.2, species=setosa) ]
-```
-
-???
-
-grand finale
-
-applicable for interactive workflow only
 
 ---
 # Example: How to fit a linear regression model per group?
@@ -893,6 +602,21 @@ versicolor   org.apache.commons.math3.stat.regression.SimpleRegression@7bfcd12c 
  virginica   org.apache.commons.math3.stat.regression.SimpleRegression@42f30e0a       0.2318      1.446
 ```
 
+---
+
+background-image: url(images/nyc.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
+
+class: middle, inverse, center
+
+</p>
+https://www.kaggle.com/c/nyc-taxi-trip-duration/
+
+# Predict NYC Taxi Trip Durations with Kotlin
+
+
 
 ---
 
@@ -901,32 +625,37 @@ class: middle, inverse
 # Kotlin Stack for Data Science
 
 ### Interactive Shell
-### Report Rendering & Notebook Support
 ### Manipulation of typed and untyped data
 ## Data Visualization
+### Report Rendering & Notebook Support
 
 
 ---
 
-## Some options
+# Some Existing Options
 
-* [Vegas](https://github.com/vegas-viz/Vegas) Vega-lite wrapper, aims to be the missing MatPlotLib for Scala + Spark
+* [Vegas](https://github.com/vegas-viz/Vegas) Vega-lite wrapper, aims to be the missing
+MatPlotLib for Scala + Spark
+
 * [data2viz](https://github.com/data2viz/data2viz) is a multi platform data visualization library with comprehensive DSL
-* [XChart](https://github.com/timmolter/XChart) is a light-weight Java library for plotting data
-* [Kubed](https://github.com/hudsonb/kubed/) is a Kotlin library for manipulating the JavaFX scenegraph based on data.
-* [TornadoFX](https://github.com/edvin/tornadofx/wiki/Charts) provides some Kotlin wrappers around JavaFX
-* [Jzy3d](http://www.jzy3d.org/) is an open source java library that allows to easily draw 3d #surfaces, scatter plots, bar charts
-* [plotly-scala](https://github.com/alexarchambault/plotly-scala) which provides scala bindings for plotly.js and works within jupyter
-* [grafana](https://grafana.com/) is an open platform for beautiful analytics and monitoring
 
-Great link collection: https://github.com/thomasnield/kotlin-data-science-resources
+* [XChart](https://github.com/timmolter/XChart) is a light-weight Java library for plotting data
+
+* [Kubed](https://github.com/hudsonb/kubed/) is a Kotlin library for manipulating the JavaFX scenegraph based on data.
+
+* [Jzy3d](http://www.jzy3d.org/) is an open source java library that allows to easily draw 3d #surfaces, scatter plots, bar charts
+
+* [plotly-scala](https://github.com/alexarchambault/plotly-scala) which provides scala bindings for plotly.js and works within jupyter
+
+
+More options: https://github.com/thomasnield/kotlin-data-science-resources
 
 Do they allow for convenient fluent data-vis?
 
 --
 
-### 1. Still no coherent `ggplot2` like framework with grammar for graphics
-### 2. JVM graphics device project that works from Kotlin REPL, in Intellij, and in jupyter notebooks
+### 1. JVM graphics device project that works from Kotlin REPL, in Intellij, and in jupyter notebooks
+### 2. Still no coherent `ggplot2` like framework with grammar for graphics
 
 
 ---
@@ -953,7 +682,7 @@ class: inverse
 
 .center[![](images/kravis_repo.png)]
 
-> `kravis` implements a grammar/DSL to create a wide range of plots using a standardized set of verbs. Internally, it is _just_ a more typesafe wrapper around `ggplot2`
+> `kravis` implements a grammar/DSL to create a wide range of plots using a standardized set of verbs. Internally, it is _just_ a more typesafe wrapper around `ggplot2`.
 
 
 
@@ -1083,33 +812,228 @@ fun Array<out DoubleArray>.transpose(): Array<out DoubleArray>? =
 
 
 ```
+
 ---
-# Regression & Classification: https://github.com/haifengl/smile
 
-* **Classification** Support Vector Machines, Decision Trees, AdaBoost, Gradient Boosting, Random Forest, Logistic Regression, Neural Networks, RBF Networks, Maximum Entropy Classifier, KNN, Naïve Bayesian, Fisher/Linear/Quadratic/Regularized Discriminant Analysis.
+background-image: url(images/nyc.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
 
-* **Regression** Support Vector Regression, Gaussian Process, Regression Trees, Gradient Boosting, Random Forest, RBF Networks, OLS, LASSO, Ridge Regression.
+class: middle, inverse, center
 
-* **Feature Selection** Genetic Algorithm based Feature Selection, Ensemble Learning based Feature Selection, Signal Noise ratio, Sum Squares ratio.
+</p>
+https://www.kaggle.com/c/nyc-taxi-trip-duration/
 
-* **Clustering** BIRCH, CLARANS, DBScan, DENCLUE, Deterministic Annealing, K-Means, X-Means, G-Means, Neural Gas, Growing Neural Gas, Hierarchical Clustering, Sequential Information Bottleneck, Self-Organizing Maps, Spectral Clustering, Minimum Entropy Clustering.
+# Predict NYC Taxi Trip Durations with Kotlin
 
-* **Manifold learning** IsoMap, LLE, Laplacian Eigenmap, t-SNE, PCA, Kernel PCA, Probabilistic PCA, GHA, Random Projection, MDS
 
-* **Nearest Neighbor Search** BK-Tree, Cover Tree, KD-Tree, LSH.
 
-* **Sequence Learning** Hidden Markov Model, Conditional Random Field.
+---
 
-* **Natural Language Processing** Tokenizer, Keyword Extractor, Stemmer, POS Tagging, Relevance Ranking
+class: middle, inverse
+
+# Kotlin Stack for Data Science
+
+### Interactive Shell
+### Manipulation of typed and untyped data
+### Data Visualization
+## Report Rendering & Notebook Support
+
+
+---
+
+## ![](images/project_jupyter.png)
+
+.left-column60[
+> Open-source web application that allows you to create and share
+  documents that contain live code, equations, visualizations and narrative text.
+
+Pros
+* Fast prototyping
+* Literate Programming
+* Great Narrative
+* Shareable insights without build process
+
+Cons
+* Collaboration is tricky
+* Versioning and code reviews are hard
+* Webapp not a real IDE substitute -> JupyterLab
+]
+
+.right-column40[
+![](images/d2013656.png)
+
+]
 
 ???
 
+Very popular framework that is "Super-Charging Data Science"
 
-https://deeplearning4j.org/
 
-kotlin examples
 
-https://github.com/deeplearning4j/dl4j-examples/blob/master/dl4j-examples/src/main/kotlin/org/deeplearning4j/examples/feedforward/mnist/MLPMnistSingleLayerExample.kt
+https://www.quora.com/What-are-the-pros-and-cons-of-using-Python-Jupyter-versus-a-normal-Python-development-environment
+
+https://unidata.github.io/online-python-training/introduction.html
+
+---
+exclude: true
+
+```kotlin
+//' ## Flowers Analysis
+
+//' The iris flower
+//' ![](https://goo.gl/tTbZMq)
+
+@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
+@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
+
+import krangl.*
+
+
+
+//' The first records in the input data (which is bundled with krangl) are
+irisData
+
+//' The structure of the input data is
+irisData.glimpse()
+
+//' Calculate mean petal
+val summarizeDf: DataFrame = irisData
+    .groupBy("Species")
+    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
+
+//' Print the summarized data
+summarizeDf.print()
+
+//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
+```
+
+
+---
+# Kotlin Notebooks?
+
+> A kernel provides programming language support in Jupyter. IPython is the default kernel. Additional kernels include R, Julia, and many more.
+
+Two competing kernels for Kotlin
+
+1. https://github.com/ligee/kotlin-jupyter
+
+    * More established
+    * Backed by JB
+    * Friendly and responsive developers
+    * Slow development process
+
+2. https://github.com/twosigma/beakerx
+
+    > a collection of JVM kernels and interactive widgets for plotting, tables, auto-translation, and other extensions to Jupyter Notebook.
+
+    * Very active, fast progress
+    * Friendly and very responsive developers
+    * Not __just__ a kernel
+    * Display handler registry in kernel `krangl.beakerx.TableDisplayer.register()`
+
+???
+
+beakerx: adapaters for tablesaw https://github.com/jtablesaw/tablesaw/tree/master/beakerx and morpheus
+
+---
+
+![](images/kotlin_notebook_example.png)
+
+???
+
+Definitely cool, but lacks effieciency because of missing tooling (error checking, compeltion, refactoring)
+---
+
+background-image: url(images/spin_workflow.jpg)
+background-position: bottom
+background-size: 95%
+
+# Literate Programming
+
+> Build reports including source code, results, and  <br>visualization from __code__
+
+* `python`:  `notedown` + `nbconvert`
+* `R`:  `knitr::knitr` -> `knit` -> `pandoc`
+
+--
+
+
+ #  `kts` -> **????** --> html
+
+
+???
+
+R ->  (**Speakers choice!**)
+
+*  IDE markdown support very good
+*  Kotln code chunk support not usable
+
+## Can we do this with Kotlin?
+
+---
+
+# Yes we can, `kts`->`markdown`->`jupyter`->`html`
+
+```bash
+inputScript=krangl_example_report.kts
+reportName=$(basename $inputScript .kts)
+
+# https://www.r-project.org/
+Rscript - ${inputScript} <<"EOF"
+knitr::spin(commandArgs(T)[1], doc = "^//'[ ]?", knit=F)
+EOF
+
+# https://github.com/holgerbrandl/kscript
+kscript -t 'lines.map { it.replace("{r }", "")}.print()' ${reportName}.Rmd > ${reportName}.md
+
+# https://github.com/aaren/notedown
+notedown ${reportName}.md > ${reportName}.ipynb
+
+# http://jupyter.org/install
+jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
+        --execute --to html ${reportName}.ipynb --output ${reportName}
+```
+
+Proof-of-Concept, until kernel has evolved ( [type handlers](https://github.com/ligee/kotlin-jupyter/issues/12) + multiple cell outputs)
+
+???
+
+the geeky corner
+
+All but the last step could be reworked into a standalone tool.
+
+Alternative approaches?
+
+---
+
+background-image: url(images/nyc.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
+
+class: middle, inverse, center
+
+</p>
+https://www.kaggle.com/c/nyc-taxi-trip-duration/
+
+# Predict NYC Taxi Trip Durations with Kotlin
+
+
+---
+exclude: true
+
+<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
+
+
+???
+
+Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
+
+What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
+
+... Kidding:
 
 
 ---

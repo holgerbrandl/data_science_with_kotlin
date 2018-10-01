@@ -30,6 +30,7 @@ operator fun File.div(fileName: String) = this.resolve(fileName)
 //var trainData = DataFrame.readCSV(dataRoot / "train.csv")
 var trainData = DataFrame.readTSV(File("someTaxiRides.csv"))
 
+trainData.schema()
 
 
 /** a unique identifier for each trip*/
@@ -56,7 +57,6 @@ val store_and_fwd_flag: String = "store_and_fwd_flag"
 val trip_duration: String = "trip_duration"
 
 
-
 trainData.head()
 trainData.schema()
 
@@ -67,7 +67,7 @@ trainData["vendor_id"]
 
 
 //trainData.plot(trip_duration).geomHistogram()
-trainData.filter{ it[trip_duration] lt 1000 }.plot(trip_duration).geomHistogram()
+trainData.filter{ it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHistogram()
 
 trainData.count(passenger_count)
     .plot(x = passenger_count.asDiscreteVariable, y = "n")
@@ -88,7 +88,7 @@ fun DataFrame.constrainCoord(): DataFrame = filter {
         with(it[pickup_latitude]) { (this gt 40.55) AND (this lt 40.9) }
 }
 
-//trainData.plot(x = pickup_longitude, y = pickup_latitude).geomPoint(alpha = .1)
+trainData.plot(x = pickup_longitude, y = pickup_latitude).geomPoint(alpha = .1)
 trainData
     .constrainCoord()
     .plot(x = pickup_longitude, y = pickup_latitude).geomPoint(alpha = .1)
