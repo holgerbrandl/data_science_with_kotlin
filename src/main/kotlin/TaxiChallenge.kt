@@ -486,7 +486,7 @@ fun main(args: Array<String>) {
 
 
     //do a roc curve
-    predicts
+//    predicts
 
 }
 
