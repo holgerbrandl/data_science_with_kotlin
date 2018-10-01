@@ -15,13 +15,12 @@ output:
 
 class: middle, inverse
 
-### Outline
+# Kotlin Stack for Data Science
 
-# Ingredients for data science?
-### Table Wrangling
-### Beyond Tables
+### Interactive Shell
+### Report Rendering & Notebook Support
+### Manipulation of typed and untyped data
 ### Data Visualization
-### Reporting & Notebooks
 
 
 ---
@@ -144,6 +143,9 @@ background-size: 95%
 
 > ### Overall usability not yet _en par_ with R or python
 
+???
+
+project structure too rigid (varying dependencies between scripts)
 
 ---
 class: inverse
@@ -212,9 +214,11 @@ https://github.com/holgerbrandl/send2terminal
 
 Kotlin aware expression detection + automatic imports
 
-Also works for great for python & R and anything else in Intellij.
+Auto-jump to next expression
 
-Just works on MacOS :-(
+Also works for great for python, R & bash and anything else in Intellij.
+
+Just works well on MacOS :-(
 ]
 
 .right-column40[
@@ -1214,7 +1218,7 @@ sleepData
         it["sleep_rem"] / it["sleep_total"] 
     }
     // Analyze correlation
-    .ggplot(
+    .plot(
         x = "sleep_total", 
         y = "rem_proportion", 
         color = "vore", 
