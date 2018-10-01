@@ -4,14 +4,13 @@
 @file:DependsOnMaven("com.github.holgerbrandl:kravis:0.4")
 
 
-import krangl.irisData
 import kravis.SessionPrefs
-import kravis.device.JupyterDevice
+import kravis.device.SwingPlottingDevice
 import kravis.geomCol
 import kravis.plot
 
 //' peak into iris data
-irisData
+//irisData
 
 enum class Gender { male, female }
 data class Person(val name: String, val gender: Gender, val heightCm: Int, val weightKg: Double)
@@ -23,7 +22,7 @@ val persons = listOf(
     Person("Maria", Gender.female, 172, 66.3)
 )
 
-SessionPrefs.OUTPUT_DEVICE = JupyterDevice()
+SessionPrefs.OUTPUT_DEVICE = SwingPlottingDevice()
 
 //' peek into persons
 persons
@@ -33,4 +32,5 @@ persons.plot(x = {name}, y = { weightKg }, fill = { gender.toString() })
     .geomCol()
     .xLabel("height [m]")
     .yLabel("weight [kg]")
+    .title("Body Size Distribution")
     .show()

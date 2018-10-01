@@ -240,3 +240,203 @@ Context specific for completion in IDE
 
 ![](images/select_completion.png)
 
+
+---
+# Add columns with `addColumn`
+
+```kotlin
+val df: DataFrame = dataFrameOf(
+    "first_name", "last_name", "age", "weight")(
+    "Max", "Doe", 23, 55,
+    "Franz", "Smith", 23, 88,
+    "Horst", "Keanes", 12, 82)
+
+df.addColumn("salary_category") { 3 }             // add constants
+df.addColumn("age_3y_later") { it["age"] + 3 }    // do basic column arithmetics
+
+// krangl dataframes are immutable so we need to (re)assign results to preserve changes.
+val newDF = df.addColumn("full_name") { it["first_name"] + " " + it["last_name"] }
+
+// krangl overloads  arithmetic operators like + for dataframe-columns
+df.addColumn("user_id") { it["last_name"] + "_id" + rowNumber }
+
+//and provides convenience methods to ignore NAs
+df.addColumn("first_name_initial") { it["first_name"].map<String>{ it.first() } }
+
+// or add multiple columns at once
+df.addColumns(
+    "age_plus3" to { it["age"] + 3 },
+    "initial" to { it["first_name"].map<String> { it.first() } }
+)
+```
+
+---
+# Get your data in order with `sortedBy`
+
+```kotlin
+df.sortedBy("age")
+
+// and add secondary sorting attributes as varargs
+df.sortedBy("age", "weight")
+
+// reverse sorting order
+df.sortedByDescending("age")
+df.sortedBy{ desc("age") }
+
+// sort descending by age, and resolve ties by weight
+df.sortedBy({ desc(it["age"]) }, { it["weight"] })
+
+
+// sort with indicator lambda
+df.sortedBy { it["weight"].round() }
+```
+
+???
+
+mimic Kotlin stdlib where possible
+
+
+---
+# Subset variables with `select`
+
+```kotlin
+// positive selection
+df.select("last_name", "weight")    
+
+// negative selection
+df.remove("weight", "age")  
+
+// selector mini-language
+df.select { endsWith("name") }   
+df.select { matches("foo[0-9") }
+
+// functional style column selection
+// odd name to avoid JVM signature clash (help welcome!)
+df.select2 { it is IntCol } 
+
+// rename columns
+df.rename("last_name" to "Nachname")
+```
+
+---
+# Subset your records with `filter`
+
+```kotlin
+// Subset rows with vectorized filter
+df.filter { it["age"] eq 23 }
+df.filter { it["weight"] gt 50 }
+df.filter({ it["last_name"].isMatching { startsWith("Do")  }})
+
+```
+
+In case vectorized operations are not possible or available we can also filter tables by row which allows for scalar operators
+```kotlin
+df.filterByRow { it["age"] as Int > 5 }
+df.filterByRow { (it["age"] as Int).rem(10) == 0 } // "round" birthdays :-)
+
+```
+
+---
+# Summarize your data with `summarize`
+
+```kotlin
+// do simple cross tabulations
+df.count("age", "last_name")
+
+// ... or calculate single summary statistic
+df.summarize("mean_age") { it["age"].mean(true) }
+
+// ... or multiple summary statistics
+df.summarize(
+    "min_age" to { it["age"].min() },
+    "max_age" to { it["age"].max() }
+)
+
+// for sake of r and python transition you can also use `=` here
+df.summarize(
+    "min_age" `=` { it["age"].min() },
+    "max_age" `=` { it["age"].max() }
+)
+```
+---
+# Perform grouped operations after `groupBy`
+
+
+```kotlin
+val groupedDf: DataFrame = df.groupBy("age") 
+// ... or provide multiple grouping attributes with varargs
+
+val sumDF = groupedDf.summarize(
+    "mean_weight" to { it["weight"].mean(removeNA = true) },
+    "num_persons" to { nrow }
+)
+
+// Optionally ungroup the data
+sumDF.ungroup()
+```
+
+
+---
+# Example: Data Ingestion with `krangl`
+
+```kotlin
+dataFrameOf("user")("brandl,holger,37")
+        .apply { print() }
+        .separate("user", listOf("last_name", "first_name","age"), convert = true)
+        .apply { print() }
+        .apply { glimpse() }
+```
+
+```
+            user
+brandl,holger,37
+```
+-----
+```
+last_name   first_name   age
+   brandl       holger    37
+```
+-----
+```
+DataFrame with 1 observations
+last_name  : [Str]	, [brandl]
+first_name : [Str]	, [holger]
+age        : [Int]	, [37]
+```
+
+
+---
+# Bumpy API corners
+
+#### Lists in table formulas cause operator confusion
+
+```kotlin
+users.addColumn("age_plus_3") { it["user"].map<User> { it.age } + 3 } // extend list with 3
+users.addColumn("age_plus_3") { it["user"].map<User> { it.age + 3 } } // correct
+users.addColumn("age_plus_3") { it["age"] + 3 }   // works because `DataCol.plus` can be defined
+```
+
+--
+#### Incomplete vectorization for operators
+
+Some (`+`, `-`, `*`, `!`) can be overridden for collections, but others cannot (e.g. all arithmetic and boolean comparison ops)
+
+No vectorization for `>`,  `&&` `==`, etc. in table forumlas → Use function calls or not so pretty `gt`, `AND`, `eq`, etc.
+
+
+--
+#### Receiver vs parameter functions vs properties
+
+How to write vector utilties?
+
+```
+dataFrame.summarize("mean_salary") { mean(it["salaray"]) }    // function parameter 
+dataFrame.summarize("mean_salary") { it["salaray"].mean() }   // extension/member function
+dataFrame.summarize("mean_salary") { it["salaray"].mean }     // extension property
+```
+
+???
+
+Don't overload `operator Any?.plus` --> Confusion
+
+https://kotlinlang.org/docs/reference/operator-overloading.html

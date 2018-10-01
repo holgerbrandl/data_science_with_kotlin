@@ -21,13 +21,12 @@ class: center, middle, inverse, title-slide
 
 class: middle, inverse
 
-### Outline
+# Kotlin Stack for Data Science
 
-# Ingredients for data science?
-### Table Wrangling
-### Beyond Tables
+### Interactive Shell
+### Report Rendering &amp; Notebook Support
+### Manipulation of typed and untyped data
 ### Data Visualization
-### Reporting &amp; Notebooks
 
 
 ---
@@ -150,6 +149,9 @@ background-size: 95%
 
 &gt; ### Overall usability not yet _en par_ with R or python
 
+???
+
+project structure too rigid (varying dependencies between scripts)
 
 ---
 class: inverse
@@ -218,9 +220,11 @@ https://github.com/holgerbrandl/send2terminal
 
 Kotlin aware expression detection + automatic imports
 
-Also works for great for python &amp; R and anything else in Intellij.
+Auto-jump to next expression
 
-Just works on MacOS :-(
+Also works for great for python, R &amp; bash and anything else in Intellij.
+
+Just works well on MacOS :-(
 ]
 
 .right-column40[
@@ -327,13 +331,14 @@ jupyter nbconvert --ExecutePreprocessor.kernel_name=kotlin \
         --execute --to html ${reportName}.ipynb --output ${reportName}
 ```
 
-Proof-of-Concept. :-)
+Proof-of-Concept, until kernel has evolved ( [type handlers](https://github.com/ligee/kotlin-jupyter/issues/12) + multiple cell outputs)
 
-All but the last step could be reworked into a standalone tool.
 
 ???
 
 the geeky corner
+
+All but the last step could be reworked into a standalone tool.
 
 Alternative approaches?
 
@@ -618,160 +623,9 @@ background-size: 78%
 
 nested tables exteremly powerful concept.
 
----
-background-image: url(images/tidyr_cs_checked.png)
-background-position: center
-background-repeat: no-repeat
-background-size: 78%
-
-
-???
-
-r functions defined much more loose in terms argument types, not a simple one-2-one translation
-
-From http://dplyr.tidyverse.org/articles/programming.html
-
-&gt; Most dplyr functions use non-standard evaluation (NSE). This is a catch-all term that means they don't follow the usual R rules of evaluation. Instead, they capture the expression that you typed and evaluate it in a custom way.
-
-Following slides 2 examples: gather + separate
 
 ---
-# Add columns with `addColumn`
-
-```kotlin
-val df: DataFrame = dataFrameOf(
-    "first_name", "last_name", "age", "weight")(
-    "Max", "Doe", 23, 55,
-    "Franz", "Smith", 23, 88,
-    "Horst", "Keanes", 12, 82)
-
-df.addColumn("salary_category") { 3 }             // add constants
-df.addColumn("age_3y_later") { it["age"] + 3 }    // do basic column arithmetics
-
-// krangl dataframes are immutable so we need to (re)assign results to preserve changes.
-val newDF = df.addColumn("full_name") { it["first_name"] + " " + it["last_name"] }
-
-// krangl overloads  arithmetic operators like + for dataframe-columns
-df.addColumn("user_id") { it["last_name"] + "_id" + rowNumber }
-
-//and provides convenience methods to ignore NAs
-df.addColumn("first_name_initial") { it["first_name"].map&lt;String&gt;{ it.first() } }
-
-// or add multiple columns at once
-df.addColumns(
-    "age_plus3" to { it["age"] + 3 },
-    "initial" to { it["first_name"].map&lt;String&gt; { it.first() } }
-)
-```
-
----
-# Get your data in order with `sortedBy`
-
-```kotlin
-df.sortedBy("age")
-
-// and add secondary sorting attributes as varargs
-df.sortedBy("age", "weight")
-
-// reverse sorting order
-df.sortedByDescending("age")
-df.sortedBy{ desc("age") }
-
-// sort descending by age, and resolve ties by weight
-df.sortedBy({ desc(it["age"]) }, { it["weight"] })
-
-
-// sort with indicator lambda
-df.sortedBy { it["weight"].round() }
-```
-
-???
-
-mimic Kotlin stdlib where possible
-
-
----
-# Subset variables with `select`
-
-```kotlin
-// positive selection
-df.select("last_name", "weight")    
-
-// negative selection
-df.remove("weight", "age")  
-
-// selector mini-language
-df.select { endsWith("name") }   
-df.select { matches("foo[0-9") }
-
-// functional style column selection
-// odd name to avoid JVM signature clash (help welcome!)
-df.select2 { it is IntCol } 
-
-// rename columns
-df.rename("last_name" to "Nachname")
-```
-
----
-# Subset your records with `filter`
-
-```kotlin
-// Subset rows with vectorized filter
-df.filter { it["age"] eq 23 }
-df.filter { it["weight"] gt 50 }
-df.filter({ it["last_name"].isMatching { startsWith("Do")  }})
-
-```
-
-In case vectorized operations are not possible or available we can also filter tables by row which allows for scalar operators
-```kotlin
-df.filterByRow { it["age"] as Int &gt; 5 }
-df.filterByRow { (it["age"] as Int).rem(10) == 0 } // "round" birthdays :-)
-
-```
-
----
-# Summarize your data with `summarize`
-
-```kotlin
-// do simple cross tabulations
-df.count("age", "last_name")
-
-// ... or calculate single summary statistic
-df.summarize("mean_age") { it["age"].mean(true) }
-
-// ... or multiple summary statistics
-df.summarize(
-    "min_age" to { it["age"].min() },
-    "max_age" to { it["age"].max() }
-)
-
-// for sake of r and python transition you can also use `=` here
-df.summarize(
-    "min_age" `=` { it["age"].min() },
-    "max_age" `=` { it["age"].max() }
-)
-```
----
-# Perform grouped operations after `groupBy`
-
-
-```kotlin
-val groupedDf: DataFrame = df.groupBy("age") 
-// ... or provide multiple grouping attributes with varargs
-
-val sumDF = groupedDf.summarize(
-    "mean_weight" to { it["weight"].mean(removeNA = true) },
-    "num_persons" to { nrow }
-)
-
-// Optionally ungroup the data
-sumDF.ungroup()
-```
-
-
----
-# Bring it all together
+# Example: Summarize Flights by Date
 
 ```kotlin
 flightsData
@@ -802,7 +656,24 @@ year   month   day       mean_arr_delay       mean_dep_delay
 either `=` or to will go away most likely
 
 ---
-# Example: Data Reshaping with `krangl`
+background-image: url(images/tidyr_cs_checked.png)
+background-position: center
+background-repeat: no-repeat
+background-size: 78%
+
+
+???
+
+r functions defined much more loose in terms argument types, not a simple one-2-one translation
+
+From http://dplyr.tidyverse.org/articles/programming.html
+
+&gt; Most dplyr functions use non-standard evaluation (NSE). This is a catch-all term that means they don't follow the usual R rules of evaluation. Instead, they capture the expression that you typed and evaluate it in a custom way.
+
+Following slides 2 examples: gather + separate
+
+---
+# Example: Reshape Tables from Long to Wide
 
 ```kotlin
 val climate = dataFrameOf(
@@ -834,34 +705,6 @@ Frankfurt              534   2005        913
 ???
 
 `colummns` use function literals again, with column names type as receiver
-
----
-# Example: Data Ingestion with `krangl`
-
-```kotlin
-dataFrameOf("user")("brandl,holger,37")
-        .apply { print() }
-        .separate("user", listOf("last_name", "first_name","age"), convert = true)
-        .apply { print() }
-        .apply { glimpse() }
-```
-
-```
-            user
-brandl,holger,37
-```
------
-```
-last_name   first_name   age
-   brandl       holger    37
-```
------
-```
-DataFrame with 1 observations
-last_name  : [Str]	, [brandl]
-first_name : [Str]	, [holger]
-age        : [Int]	, [37]
-```
 
 ---
 # To type or not to type?
@@ -918,10 +761,6 @@ val df: DataFrame = dataFrame.leftJoin(otherDF)
 dataFrame.addColumn("intial"){ it["employee"].map&lt;Employee&gt;{ it.name.first() }}
 ```
 
-`+` `pandas`/`tidyverse` like API to create, manipulate, reshape, combine and summarize  data frames
-
-`+` methods to go back and forth between untyped and typed data
-
 
 ???
 
@@ -930,21 +769,28 @@ dataFrame.addColumn("intial"){ it["employee"].map&lt;Employee&gt;{ it.name.first
 
 assess if it would by any fun to work with such an API!
 
+* `pandas`/`tidyverse` like API to create, manipulate, reshape, combine and summarize  data frames
+
+* methods to go back and forth between untyped and typed data
+
+
 ---
 # Type support - Part 1: Digest objects into attribute columns
 
-Cherry-pick properties with `Iterable&lt;T&gt;.deparseRecords`
+Deparse `Iterable` into data frames with `Iterable&lt;T&gt;.deparseRecords`
+
 ```kotlin
-val deparsedDF = records.deparseRecords { mapOf(
+val deparsedDF : DataFrame = records.deparseRecords { mapOf(
     "age" to it.age, 
     "weight" to it.mean_weight
 ) }
 
 ```
 
-Be lazy and use reflection
+Or be lazy and use reflection
 ```kotlin
 data class Person(val name:String, val age:Int)
+
 val persons :List&lt;Person&gt; = listOf(Person("Max", 23), Person("Anna", 43))
 
 val personsDF: DataFrame = persons.asDataFrame() 
@@ -958,66 +804,39 @@ age   name
 ```
 
 ---
-# Type support - Part 2: List/object columns
+# Type support - Part 2: Object Columns for `Any`thing
 
-`krangl` supports arbitrary types per column
-
-```kotlin
-val persons: DataFrame = dataFrameOf("person")(persons) 
-persons
-```
-
-```
-                      person
-   Person(name=Max, age=23)
-   Person(name=Anna, age=43)
-```
-
-```kotlin
-personsDF2.glimpse()
-```
-
-```
-DataFrame with 2 observations
-person	: [Any]	, [Person(name=Max, age=23), Person(name=Anna, age=43)]
-```
-
-
----
-# Type support - Part 3: Unfold objects into columns
-
-* similar to `separate()` but for object columns
+Expand properties of `person` into columns via reflection
 
 
 ```kotlin
 data class Person(val name:String, val age:Int)
+
 val persons :Iterable&lt;Person&gt; = listOf(Person("Max", 22), Person("Anna", 23))
 
 val df : DataFrame = dataFrameOf("person")(persons)
 
-df.names
-```
-```
-["person"]
-```
---
 
-Expand properties of `person` into columns via reflection
-
-```kotlin
-var personsDF = df.
-    unfold&lt;Person&gt;("person", keep=true) 
+var personsDF = df. unfold&lt;Person&gt;("person", keep=true) 
     // unfold&lt;Person&gt;("person", select=listOf("age"))
     
-personsDF.names   
+personsDF.schema()   
 ```
 
 ```
-["person", "name", "age"]
+DataFrame with 2 observations
+person  [Person]  Person(name=Max, age=22), Person(name=Anna, age=23)
+age     [Int]     22, 23
+name    [Str]     Max, Anna
 ```
+
+???
+
+similar to `separate()` but for object columns
+
 
 ---
-# Type support - Part 4: Let krangl define the schema
+# Type support - Part 3: Let krangl define the schema
 
 
 Infer a schema with
@@ -1044,7 +863,6 @@ records.take(1)
 [ Iris(sepalLength=5.1, sepalWidth=3.5, petalLength=1.4, petalWidth=0.2, species=setosa) ]
 ```
 
-
 ???
 
 grand finale
@@ -1052,45 +870,9 @@ grand finale
 applicable for interactive workflow only
 
 ---
-# Bumpy API corners
-
-#### Lists in table formulas cause operator confusion
-
-```kotlin
-users.addColumn("age_plus_3") { it["user"].map&lt;User&gt; { it.age } + 3 } // extend list with 3
-users.addColumn("age_plus_3") { it["user"].map&lt;User&gt; { it.age + 3 } } // correct
-users.addColumn("age_plus_3") { it["age"] + 3 }   // works because `DataCol.plus` can be defined
-```
-
---
-#### Incomplete vectorization for operators
-
-Some (`+`, `-`, `*`, `!`) can be overridden for collections, but others cannot (e.g. all arithmetic and boolean comparison ops)
-
-No vectorization for `&gt;`,  `&amp;&amp;` `==`, etc. in table forumlas → Use function calls or not so pretty `gt`, `AND`, `eq`, etc.
-
-
---
-#### Receiver vs parameter functions vs properties
-
-How to write vector utilties?
-
-```
-dataFrame.summarize("mean_salary") { mean(it["salaray"]) }    // function parameter 
-dataFrame.summarize("mean_salary") { it["salaray"].mean() }   // extension/member function
-dataFrame.summarize("mean_salary") { it["salaray"].mean }     // extension property
-```
-
-???
-
-Don't overload `operator Any?.plus` --&gt; Confusion
-
-https://kotlinlang.org/docs/reference/operator-overloading.html
-
----
 # Example: How to fit a linear regression model per group?
 
-http://commons.apache.org/proper/commons-math/ and https://github.com/chen0040/java-glm
+Using http://commons.apache.org/proper/commons-math/ or https://github.com/chen0040/java-glm
 
 ```kotlin
 val irisModel = irisData
@@ -1110,27 +892,6 @@ val irisModel = irisData
 versicolor   org.apache.commons.math3.stat.regression.SimpleRegression@7bfcd12c       0.319      0.8721
  virginica   org.apache.commons.math3.stat.regression.SimpleRegression@42f30e0a       0.2318      1.446
 ```
-
-
----
-# Quo vadis `krangl`?
-
-Promising API experiment.
-
-Great learning experience.
-
-Next steps
-
-* Better dates support
-* Better lambda receiver contexts
-* More bindings &amp; examples to other jvm data-science libraries
-
-Later
-* Performance (indices, avoid list and array copies, compressed columns)
-* `Sequence` vs `Iterable`?
-
-
-### Feel welcome fork/contribute PRs, ideas, bug reports at https://github.com/holgerbrandl/krangl
 
 
 ---
@@ -1196,9 +957,8 @@ class: inverse
 
 .center[![](images/kravis_repo.png)]
 
-&gt; `kravis` implements a grammar/DSL to create a wide range of plots using a standardized set of verbs.
+&gt; `kravis` implements a grammar/DSL to create a wide range of plots using a standardized set of verbs. Internally, it is _just_ a more typesafe wrapper around `ggplot2`
 
-It is a more typesafe wrapper around `ggplot2`, which is used for rendering. It can interface with R via various rendering backends ranging including your local R, dockerize R or even a remote webservice.
 
 
 
@@ -1206,7 +966,14 @@ It is a more typesafe wrapper around `ggplot2`, which is used for rendering. It 
 Can we build a what pandas is for `python`, and `readr`+`tidyr`+`dplyr` are for R?
 
 ---
-# Usage example
+![](images/module_architecture.jpg)
+
+???
+
+`kravis` is more typesafe wrapper around `ggplot2`, which is used for rendering. It can interface with R via various rendering backends ranging including your local R, dockerize R or even a remote webservice. It provides different frontend to inspect the plots.
+
+---
+# Example: Tabular API
 
 .left-column50[
 
@@ -1220,7 +987,7 @@ sleepData
         it["sleep_rem"] / it["sleep_total"] 
     }
     // Analyze correlation
-    .ggplot(
+    .plot(
         x = "sleep_total", 
         y = "rem_proportion", 
         color = "vore", 
@@ -1237,31 +1004,36 @@ sleepData
 ![](images/kravis_sleep.png)
 ]
 
----
-# krangl + smile + kravis
 
+---
+# Example: Typed API
+
+Use any `Iterable&lt;T&gt;` to build a plot. :-)
+
+.left-column50[
 
 ```kotlin
-val irisArray = irisData.remove("Species").toArray()
+val sleepPatterns : List&lt;SleepPattern&gt; = ...
 
-val pca = smile.projection.PCA(irisArray)
-
-//barchart
-plotOf(pca.varianceProportion.toList()) {
-    encoding(x) { this }
-}.render()
-
-
-val projection = pca.setProjection(2).projection
-
-// PC1 vs PC2 scatter
-plotOf(projection.transpose().array().withIndex()) {
-    mark(MarkType.point)
-    encoding(x) { value[0] }
-    encoding(y) { value[1] }
-    encoding(text){ "PC"+index}
-}.render()
+//  deparse records using property references
+sleepPatterns
+    .plot(
+        x = SleepPattern::sleep_rem,
+        y = SleepPattern::sleep_total,
+        color = SleepPattern::vore,
+        size = SleepPattern::brainwt
+    )
+    .geomPoint()
+    .title("Correlation of total sleep " +
+     "and and rem sleep by food preference")
 ```
+
+]
+
+.right-column50[
+![](images/sleep_correlation.png)
+]
+
 
 
 ---
@@ -1294,19 +1066,82 @@ https://github.com/deeplearning4j/dl4j-examples/blob/master/dl4j-examples/src/ma
 
 
 ---
+# `krangl` + `kravis` + `smile`
 
-# Next steps
 
-`kts` support not yet ready for prime time
+```kotlin
+fun Array&lt;out DoubleArray&gt;.transpose(): Array&lt;out DoubleArray&gt;? = 
+    JMatrix(this).transpose().array()
 
-* [KT-11618](https://youtrack.jetbrains.com/issue/KT-11618) Dependencies are ignored in .kts files
-* [KT-15019](https://youtrack.jetbrains.com/issue/KT-15019) Editor: `args` reference in .kts file is red
-* [KT-6928](https://youtrack.jetbrains.com/issue/KT-6928) Support Kotlin scratch files
+val irisArray = irisData.remove("Species").toDoubleMatrix().transpose()
+
+val pca = smile.projection.PCA(irisArray)
+
+//barchart
+pca.varianceProportion.toList().withIndex()
+    .plot(x={ it.index}, y = {it.value})
+    .geomCol()
+    .yLabel("% Variance Explained")
+
+//val projection = pca.setProjection(2).projection
+val rotData = pca.project(irisArray)
+
+// PC1 vs PC2 scatter
+rotData.zip(irisData["Species"].asStrings())
+    .plot(x={it.first[0]}, y={it.first[1]}, color = {it.second})
+    .geomPoint()
+```
+---
+class: middle, center
+
+![](images/iris_pca.png)
+
+
+---
+
+# Next steps: Evolve Libraries
+
+### &gt; Promising API experiment &amp; Great learning experience
+
+### `krangl`
+
+* Performance (compressed columns, backend implementation)
+* More bindings &amp; examples to other data-science libraries (smile, d4j, spark, xgboost)
+* Evolve API to become more streamlined and _kotlineseque_
+
+### `kravis`
+
+* Increase API coverage
+* Stability in kshell
+
+
+---
+
+# Next steps: Evolve Tooling
+
+### &gt; Promising tooling experiment &amp; Great learning experience
+
+jupyter
+* [#12](https://github.com/ligee/kotlin-jupyter/issues/12) custom type handlers
+* [#20](https://github.com/ligee/kotlin-jupyter/issues/20) Allow for multiple cell outputs
+
+IDE tooling
 * [KT-11473](https://youtrack.jetbrains.com/issue/KT-11473) Allow debugging of Kotlin scripts
+* [KT-11618](https://youtrack.jetbrains.com/issue/KT-11618) Dependencies are ignored in .kts files
+
+Shell
+* Fix REPL issues
+* rethink REPL concept in ide (kshell integration, better scripting)
+
+Ongoing [KEEP75 Kotlin Scripting Support](https://github.com/Kotlin/KEEP/issues/75)  to harmonize Dependency Management between different tools
+
+???
 
 ### Raise your voice and vote on https://youtrack.jetbrains.com
 
-???
+
+`kts` support not yet ready for prime time
+
 
 graphics device: extension points + plugin
 * Embedded REPL output? dedicated tool window?
@@ -1317,43 +1152,28 @@ Make the world a better place by raising...
 
 kotlin conf rumours about **Data-Science IDE**
 
-
-other
-* [KT-12583](https://youtrack.jetbrains.com/issue/KT-12583) IDE REPL should run in project root directory
-
-
-
 ---
 class:  inverse
 
 # Summary
 
+### _Yes we can_ build predictive models using Kotlin. There's a fascinating JVM data science ecosystem out there, ready to be unleashed on your data
 
 ###  `krangl` is a {K}otlin library for data w{rangl}ing. It allows to filter, transform, aggregate and reshape tabular data.
 
---
+### `kravis` implements a convenient DSL to create a wide range of plots using a standardized set of verbs.
 
-### There's a fascinating JVM data science ecosystem out there, ready to be unleashed on your data
-
---
-
-### Most wanted: Consistent and versatile visualization API for Kotlin/JVM
-
---
-
-### Tooling is still evolving!
-
---
+### Tooling and libarires is still evolving!
 
 ##### **Thanks to Kotlin and IDE team @JetBrains, github community, R/tidyverse community, &lt;br&gt;Scientific Computing Facility @ Max Planck Institute of Molecular Cell Biology and Genetics**
 
-Slides Repo: https://github.com/holgerbrandl/kotlin4ds_kotlin_night_frankfurt
+Slides Repo: https://github.com/holgerbrandl/data_science_with_kotlin
 
 ???
 
-`krangl` tries to bring pandas/dplyr to Kotlin
+evolving: Kotlin is young
 
-Keep working with github community on [krangl](https://github.com/holgerbrandl/krangl), kravis &amp; [kscript](https://github.com/holgerbrandl/kscript)
+`krangl` tries to bring pandas/dplyr to Kotlin
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
