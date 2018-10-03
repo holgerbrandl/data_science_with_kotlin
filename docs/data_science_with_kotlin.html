@@ -233,44 +233,6 @@ for details see https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/
 
 
 ---
-# What to expect from an API for table manipulation?
-
-&gt; 90% of Data Science is *just* table integration!
-
-What are the essential verbs to manipulate tables? Learn from the best, learn from the **[`R::tidyverse`](https://www.tidyverse.org/)**!
-
-
-.pull-left[
-`tibble` - Data structures
-
-`tidyr`  -  Data preparation
-
-`purrr`  -  List Columns &amp; nested tables
-
-
-`dplyr`  - Data manipulation with _5+1_ verbs
-* Select columns with `select()`
-* Inspect subsets of data with `filter()`
-* Add new columns with `mutate()`
-* Reorder rows with `arrange()`
-* Summarise records with `summarise()`
-* Perform grouped operations after `group_by()`
-
-]
-
-.pull-right[
-![](images/tidyverse.png)
-]
-
-
-???
-* Supported and condensed into amazing [cheatsheets](https://www.rstudio.com/resources/cheatsheets/) by [rstudio](https://www.rstudio.com/)
-
-
-Data model, `readCSV`, `addColumn`, `select`...  What else do we need? How to design a fluent DSL/API?
-
-
----
 # Check what else is out there
 
 
@@ -373,6 +335,58 @@ tornados.writeCSV(File("tornados.txt.gz"))
 low hanging fruits first --&gt; the easy part
 
 try to match kotlin wording `dataFrameOf`
+
+---
+
+background-image: url(images/nyc.jpg)
+background-position: center
+background-repeat: no-repeat
+background-size: 100%
+
+class: middle, inverse, center
+
+&lt;/p&gt;
+https://www.kaggle.com/c/nyc-taxi-trip-duration/
+
+# Predict NYC Taxi Trip Durations with Kotlin
+
+
+---
+# What to expect from an API for table manipulation?
+
+&gt; 90% of Data Science is *just* table integration!
+
+What are the essential verbs to manipulate tables? Learn from the best, learn from the **[`R::tidyverse`](https://www.tidyverse.org/)**!
+
+
+.pull-left[
+`tibble` - Data structures
+
+`tidyr`  -  Data preparation
+
+`purrr`  -  List Columns &amp; nested tables
+
+
+`dplyr`  - Data manipulation with _5+1_ verbs
+* Select columns with `select()`
+* Inspect subsets of data with `filter()`
+* Add new columns with `mutate()`
+* Reorder rows with `arrange()`
+* Summarise records with `summarise()`
+* Perform grouped operations after `group_by()`
+
+]
+
+.pull-right[
+![](images/tidyverse.png)
+]
+
+
+???
+* Supported and condensed into amazing [cheatsheets](https://www.rstudio.com/resources/cheatsheets/) by [rstudio](https://www.rstudio.com/)
+
+
+Data model, `readCSV`, `addColumn`, `select`...  What else do we need? How to design a fluent DSL/API?
 
 ---
 background-image: url(images/data_trafo_1_cs_checked.png)
@@ -1057,7 +1071,7 @@ class:  inverse
 
 ###  `krangl` is a {K}otlin library for data w{rangl}ing. It allows to filter, transform, aggregate and reshape tabular data
 
-### `kravis` implements a convenient DSL to create a wide range of plots using a standardized set of verbs
+### `kravis` implements a convenient DSL to create a wide range of plots
 
 ### Tooling and Libraries are still evolving!
 

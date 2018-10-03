@@ -6,53 +6,22 @@ Welcome Slides
 ---
 
 
-New Project
+## PreBLoc,
 
 
 Go to kaggle -NYC --> kernel --> no koltlin --> sad --> change it (what if not at kotlinconfi with all us experts in one room)
 
 stay tuned for the next 12h hours --> just 4 min
 
-we need data --> desktop
+we need data --> download desktop --> done (start from unzipped)
 
+walk through project gradle
 
-new project --> declare dependencies
+create shell
 
-create shell (launcher needed) **TODO** kshell_from_script should fail if arg is missing
+walk through KotlinConfs
 
-meta+new --> search for script
-foo.kts
-```
-// Challenge: Predict taxi trip duration in NYC
-
-// https://www.kaggle.com/c/nyc-taxi-trip-duration
-```
-
-
-List files --> add scripting support
-![](.script_images/ea3cc702.png)
-not first class citizen?
-
-write in one piece and run it --> NO
-
-REPL --> not functional/practical --> slide later
-
-do we need to stop here -->
-
-**TODO** how to bring up kshell --> https://github.com/khud/sparklin --> **TODO**   little kscript with takes gradle and spins up shell
-
-
-load data and peek into structure
-
-**TODO** krangl columns should have nicer toString
-
-define column names fields
-
-**TODO**  needed configure column width for krangl
-
-eda
-
-**TODO** we need documenation for all central verbs used in the demo
+## TBD
 
 bring in weather (if possible via kafka)
 
