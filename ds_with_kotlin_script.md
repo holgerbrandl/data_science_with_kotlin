@@ -1,7 +1,7 @@
 ## Presentation Guide
 
 for actual presentation see [slides](./docs/
-Welchome Slides
+Welcome Slides
 
 ---
 

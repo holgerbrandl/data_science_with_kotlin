@@ -61,19 +61,31 @@ Repo Pointers
 * https://www.rstudio.com/
 
 
+Articles
 
-# talk pointers
-
-https://medium.com/@Pinterest_Engineering/the-case-against-kotlin-2c574cb87953
-
-![](.kotlinconf_2018_krangl_abstract_images/644a6593.png)
-
-https://kotlinfrompython.wordpress.com/2017/05/27/why-program-in-kotlin-instead-of-python/
-
-what is easier to read
-![](.kotlinconf_2018_krangl_abstract_images/254de216.png)
-
-or a table header
+* https://kotlinfrompython.wordpress.com/2017/05/27/why-program-in-kotlin-instead-of-python/
 
 
-no real performance data
+## Todo
+
+* use just nyc for examples
+* incrementally do interactive stuff
+* cut away tech-slides (just mention them)
+* jupyter before converter **{done}**
+
+### Later
+
+* column should have more useful toString `weatherData["date"]`
+* expression context should expose rows for simplified rowwise operations
+* `krangl` allow different join column names
+
+
+* provide better row-iterator api in krangl (see https://haifengl.github.io/smile/data.html_
+
+* Fix shaded `it` in krangl map operations
+
+
+# Misc
+
+nice `gtb.importance().zip(trainingData.names).asDataFrame()`
+
