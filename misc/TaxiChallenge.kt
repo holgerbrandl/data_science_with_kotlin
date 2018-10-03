@@ -238,13 +238,13 @@ fun main(args: Array<String>) {
 // by vendor
 //    trainData.count(getVendor_id)
     trainData
-        .addColumn("hour of the day") { df -> df[test.pickup_datetime].map<LocalDateTime> { it.hour } }
-        .plot(x = "hour of the day", fill = test.vendor_id.asDiscreteVariable)
+        .addColumn("hour of the day") { df -> df[pickup_datetime].map<LocalDateTime> { it.hour } }
+        .plot(x = "hour of the day", fill = vendor_id.asDiscreteVariable)
         .geomBar()
 
     trainData
-        .addColumn("hour of the day") { df -> df[test.pickup_datetime].map<LocalDateTime> { it.hour } }
-        .plot(x = "hour of the day", color = test.vendor_id.asDiscreteVariable)
+        .addColumn("hour of the day") { df -> df[pickup_datetime].map<LocalDateTime> { it.hour } }
+        .plot(x = "hour of the day", color = vendor_id.asDiscreteVariable)
         .geomPoint(stat = Stat.count)
         .geomLine(stat = Stat.count)
 //        .spec
@@ -283,6 +283,20 @@ fun main(args: Array<String>) {
         .geomPoint(Aes(x = dropoff_longitude, y = dropoff_latitude), alpha = .3, color = RColor.blue)
         .xLabel("longitude")
         .xLabel("latitude")
+
+
+    trainData
+        .addColumn("hour of the day") { df -> df[pickup_datetime].map<LocalDateTime> { it.hour } }
+        .plot(x = "hour of the day", fill = vendor_id.asDiscreteVariable)
+        .geomBar()
+
+    trainData
+        .addColumn("hour of the day") { df -> df[pickup_datetime].map<LocalDateTime> { it.hour } }
+        .plot(x = "hour of the day", color = vendor_id.asDiscreteVariable)
+        .geomPoint(stat = Stat.count)
+        .geomLine(stat = Stat.count)
+//        .spec
+
 
     // 3 Feature Relations
 
