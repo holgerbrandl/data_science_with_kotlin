@@ -572,3 +572,52 @@ kotlin examples
 
 https://github.com/deeplearning4j/dl4j-examples/blob/master/dl4j-examples/src/main/kotlin/org/deeplearning4j/examples/feedforward/mnist/MLPMnistSingleLayerExample.kt
 
+
+
+---
+exclude: true
+
+<a href="./krangl_example_report.html" rel="some text">![](images/kts_report.jpg)</a>
+
+
+???
+
+Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
+
+What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
+
+... Kidding:
+
+
+---
+exclude: true
+
+```kotlin
+//' ## Flowers Analysis
+
+//' The iris flower
+//' ![](https://goo.gl/tTbZMq)
+
+@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
+@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
+
+import krangl.*
+
+
+
+//' The first records in the input data (which is bundled with krangl) are
+irisData
+
+//' The structure of the input data is
+irisData.glimpse()
+
+//' Calculate mean petal
+val summarizeDf: DataFrame = irisData
+    .groupBy("Species")
+    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
+
+//' Print the summarized data
+summarizeDf.print()
+
+//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
+```

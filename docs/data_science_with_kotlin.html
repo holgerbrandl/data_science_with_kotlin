@@ -146,7 +146,7 @@ class: inverse
 
 .center[![](images/sparklin.png)]
 
-`sparklin` is a proof-of-concept software includes experimental new Kotlin REPL (aka `KShell`) which supports extensions and custom commands via plugin system.
+&gt; `sparklin` is a proof-of-concept software that includes a experimental new Kotlin REPL (aka `KShell`) which supports extensions and custom commands via a plugin system.
 
 
 ---
@@ -882,39 +882,6 @@ https://www.quora.com/What-are-the-pros-and-cons-of-using-Python-Jupyter-versus-
 
 https://unidata.github.io/online-python-training/introduction.html
 
----
-exclude: true
-
-```kotlin
-//' ## Flowers Analysis
-
-//' The iris flower
-//' ![](https://goo.gl/tTbZMq)
-
-@file:MavenRepository("bintray-plugins","http://jcenter.bintray.com")
-@file:DependsOnMaven("de.mpicbg.scicomp:krangl:0.7")
-
-import krangl.*
-
-
-
-//' The first records in the input data (which is bundled with krangl) are
-irisData
-
-//' The structure of the input data is
-irisData.glimpse()
-
-//' Calculate mean petal
-val summarizeDf: DataFrame = irisData
-    .groupBy("Species")
-    .summarize("mean_petal_width") { it["Petal.Width"].mean() }
-
-//' Print the summarized data
-summarizeDf.print()
-
-//' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
-```
-
 
 ---
 # Kotlin Notebooks?
@@ -1028,21 +995,6 @@ https://www.kaggle.com/c/nyc-taxi-trip-duration/
 
 
 ---
-exclude: true
-
-&lt;a href="./krangl_example_report.html" rel="some text"&gt;![](images/kts_report.jpg)&lt;/a&gt;
-
-
-???
-
-Feels like the holy grail for reproducible research. Strict dependency model, literate programming, amazing modern language. Let's go for it!
-
-What do we need is coding environment! Next 20 slides, VIMs kotlin language pack, 10 build sources, 10 installation process.
-
-... Kidding:
-
-
----
 
 # Next steps: Evolve Libraries
 
@@ -1067,16 +1019,15 @@ What do we need is coding environment! Next 20 slides, VIMs kotlin language pack
 ### &gt; Promising tooling experiment &amp; Great learning experience
 
 jupyter
-* [#12](https://github.com/ligee/kotlin-jupyter/issues/12) custom type handlers
+* [#12](https://github.com/ligee/kotlin-jupyter/issues/12) Support for custom type handlers
 * [#20](https://github.com/ligee/kotlin-jupyter/issues/20) Allow for multiple cell outputs
 
 IDE tooling
 * [KT-11473](https://youtrack.jetbrains.com/issue/KT-11473) Allow debugging of Kotlin scripts
-* [KT-11618](https://youtrack.jetbrains.com/issue/KT-11618) Dependencies are ignored in .kts files
 
 Shell
 * Fix REPL issues
-* rethink REPL concept in ide (kshell integration, better scripting)
+* Rethink REPL concept in ide (kshell integration, better scripting)
 
 Ongoing [KEEP75 Kotlin Scripting Support](https://github.com/Kotlin/KEEP/issues/75)  to harmonize Dependency Management between different tools
 
