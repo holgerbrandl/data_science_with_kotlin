@@ -116,8 +116,6 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
             )
         }
     }
-    trainData.schema()
-    print("huhuhuhuhuh")
 
     trainData = trainData.addColumns(
         "month" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
