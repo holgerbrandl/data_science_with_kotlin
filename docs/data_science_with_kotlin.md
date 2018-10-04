@@ -1029,6 +1029,7 @@ https://www.kaggle.com/c/nyc-taxi-trip-duration/
 jupyter
 * [#12](https://github.com/ligee/kotlin-jupyter/issues/12) Support for custom type handlers
 * [#20](https://github.com/ligee/kotlin-jupyter/issues/20) Allow for multiple cell outputs
+* `DependsOnMaven` is not repeatable
 
 IDE tooling
 * [KT-11473](https://youtrack.jetbrains.com/issue/KT-11473) Allow debugging of Kotlin scripts
@@ -1037,7 +1038,7 @@ Shell
 * Fix REPL issues
 * Rethink REPL concept in ide (kshell integration, better scripting)
 
-Ongoing [KEEP75 Kotlin Scripting Support](https://github.com/Kotlin/KEEP/issues/75)  to harmonize Dependency Management between different tools
+Ongoing [KEEP75 - Kotlin Scripting Support](https://github.com/Kotlin/KEEP/issues/75)  to harmonize Dependency Management between different tools
 
 ???
 

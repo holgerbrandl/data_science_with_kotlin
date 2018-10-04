@@ -1,8 +1,11 @@
+@file:MavenRepository("bintray-plugins", "http://jcenter.bintray.com")
+
 //@file:DependsOn("de.mpicbg.scicomp:krangl:0.10.2")
-@file:DependsOn("de.mpicbg.scicomp:krangl:0.11-SNAPSHOT")
+//@file:DependsOn("de.mpicbg.scicomp:krangl:0.11-SNAPSHOT")
 //@file:DependsOn("com.github.holgerbrandl:kravis:0.4")
-@file:DependsOn("com.github.holgerbrandl:kravis:0.5-SNAPSHOT")
-@file:DependsOn("ml.dmlc:xgboost4j:0.80")
+@file:DependsOnMaven("com.github.holgerbrandl:kravis:0.5")
+
+//@file:DependsOnMaven("ml.dmlc:xgboost4j:0.80")
 
 
 import krangl.*
@@ -19,9 +22,9 @@ import java.time.Month
 import java.time.format.DateTimeFormatter
 
 
-//' # Predict taxi trip duration in NYC
-
-//' For detail see https://www.kaggle.com/c/nyc-taxi-trip-duration
+//' # A wild ride through NYC with Kotlin
+//
+//' Predict taxi trip durations in NYC. For detail see https://www.kaggle.com/c/nyc-taxi-trip-duration
 
 val dataRoot = File("/Users/brandl/Desktop/taxi_data")
 
@@ -35,7 +38,7 @@ var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
 
 var testData = DataFrame.readCSV(dataRoot / "test.csv")
 
-//Live@KC Explore structure and differences between test and training data
+//'Live@KC Explore structure and differences between test and training data
 trainData
 trainData.head()
 trainData.schema()
@@ -48,6 +51,8 @@ trainData["passenger_count"]
 
 testData.schema()
 //end
+
+//' Define columns names as fields for better completion
 
 /** a unique identifier for each trip*/
 val id: String = "id"
@@ -81,19 +86,15 @@ val distance = "distance"
 trainData["vendor_id"]
 trainData[vendor_id]
 
+//' ## Feature Engineering
 
 fun prepareFeatures(trainData: DataFrame): DataFrame {
     var trainData = trainData
-
     val datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     trainData = trainData.addColumns(
         pickup_datetime to { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
     )
-
-//toto join with weather data
-    // calculate the distance of the trip
-
     //https://stackoverflow.com/questions/639695/how-to-convert-latitude-or-longitude-to-meters
     val coordDistance = fun(lon1: Double, lat1: Double, lon2: Double, lat2: Double): Double {
         val R = 6378.137                                // radius of earth in Km
@@ -105,11 +106,6 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
         return (d * 1000)                           // distance in meters
     }
 
-//    trainData = trainData.addColumn(distance) { df ->
-//        val longDist = df[pickup_longitude] - df[dropoff_longitude]
-//        val latDist = df[pickup_latitude] - df[dropoff_latitude]
-//        (longDist * longDist + latDist * latDist).asDoubles().map { Math.sqrt(it!!) }
-//    }
     trainData = trainData.addColumn(distance) {
         df.rows.map { row ->
             coordDistance(
@@ -120,6 +116,8 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
             )
         }
     }
+    trainData.schema()
+    print("huhuhuhuhuh")
 
     trainData = trainData.addColumns(
         "month" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
@@ -144,11 +142,11 @@ trainData.schema()
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Do some visual inspection
+//' ## Data Visualisation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//' Analyze overal distribution of the trip duration
+//' Analyze overall distribution of the trip duration
 //trainData.plot(trip_duration).geomHistogram()
 trainData.filter { it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHistogram()
 trainData.plot(x = passenger_count.asDiscreteVariable)
@@ -345,3 +343,5 @@ kaggleSubmission.schema()
 kaggleSubmission.writeCSV(File("kotlin4kaggle.csv"))
 
 println("Finished first (out of N>>1) kaggle iteration using kotlin!")
+
+

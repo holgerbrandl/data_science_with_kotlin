@@ -214,3 +214,11 @@ jupyter
 ```
 
 
+## NYC rides
+
+```bash
+cd /Users/brandl/projects/kotlin/data_science_with_kotlin/report_rendering/nyc
+
+kts2html.sh /Users/brandl/projects/kotlin/data_science_with_kotlin/src/main/kotlin/WildRideThroughNYC.kts
+```
+

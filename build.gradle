@@ -28,15 +28,16 @@ dependencies {
 
     compile "com.github.holgerbrandl:kscript-annotations:1.2"
 
-    compile "de.mpicbg.scicomp:krangl:0.11-SNAPSHOT"
+//    compile "de.mpicbg.scicomp:krangl:0.11-SNAPSHOT"
 
-    compile "com.github.holgerbrandl:kravis:0.5-SNAPSHOT"
-//    compile "com.github.holgerbrandl:kravis:0.4"
+//    compile "com.github.holgerbrandl:kravis:0.5-SNAPSHOT"
+    compile "com.github.holgerbrandl:kravis:0.5"
 
     compile "ml.dmlc:xgboost4j:0.80"
 
 //    compile 'com.github.haifengl:smile-core:1.5.1'
     compile "org.jetbrains.kotlin:kotlin-script-runtime:1.2.70"
+    compile "org.jetbrains.kotlin:kotlin-script-runtime:1.2.71"
 //    compile 'com.github.holgerbrandl:kravis:-SNAPSHOT'
 }
 
