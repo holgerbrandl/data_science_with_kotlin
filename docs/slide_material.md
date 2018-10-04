@@ -621,3 +621,37 @@ summarizeDf.print()
 
 //' Conclusion: Iris flowers of species _virginica_ have on average the largest petal width.
 ```
+
+---
+# Example: Reshape Tables from Wide To Long
+
+```kotlin
+val climate = dataFrameOf(
+        "city", "coast_distance", "1995", "2000", "2005")(
+        "Dresden", 400, 343, 252, 423,
+        "Frankfurt", 534, 534, 435, 913)
+```
+
+```
+     city   coast_distance   1995   2000   2005
+  Dresden              400    343    252    423
+Frankfurt              534    534    435    913
+```
+
+```kotlin
+climate. gather("year", "rainfall", columns = { matches("[0-9]*")} )
+```
+
+```
+     city   coast_distance   year   rainfall
+  Dresden              400   1995        343
+Frankfurt              534   1995        534
+  Dresden              400   2000        252
+Frankfurt              534   2000        435
+  Dresden              400   2005        423
+Frankfurt              534   2005        913
+```
+
+???
+
+`colummns` use function literals again, with column names type as receiver

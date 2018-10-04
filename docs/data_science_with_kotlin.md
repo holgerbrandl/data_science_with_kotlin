@@ -409,6 +409,12 @@ background-size: 78%
 
 nested tables exteremly powerful concept.
 
+---
+background-image: url(images/tidyr_cs_checked.png)
+background-position: center
+background-repeat: no-repeat
+background-size: 78%
+
 
 ---
 # Example: Summarize Flights by Date
@@ -440,57 +446,6 @@ year   month   day       mean_arr_delay       mean_dep_delay
 ???
 
 either `=` or to will go away most likely
-
----
-background-image: url(images/tidyr_cs_checked.png)
-background-position: center
-background-repeat: no-repeat
-background-size: 78%
-
-
-???
-
-r functions defined much more loose in terms argument types, not a simple one-2-one translation
-
-From http://dplyr.tidyverse.org/articles/programming.html
-
-> Most dplyr functions use non-standard evaluation (NSE). This is a catch-all term that means they don't follow the usual R rules of evaluation. Instead, they capture the expression that you typed and evaluate it in a custom way.
-
-Following slides 2 examples: gather + separate
-
----
-# Example: Reshape Tables from Wide To Long
-
-```kotlin
-val climate = dataFrameOf(
-        "city", "coast_distance", "1995", "2000", "2005")(
-        "Dresden", 400, 343, 252, 423,
-        "Frankfurt", 534, 534, 435, 913)
-```
-
-```
-     city   coast_distance   1995   2000   2005
-  Dresden              400    343    252    423
-Frankfurt              534    534    435    913
-```
-
-```kotlin
-climate. gather("year", "rainfall", columns = { matches("[0-9]*")} )
-```
-
-```
-     city   coast_distance   year   rainfall
-  Dresden              400   1995        343
-Frankfurt              534   1995        534
-  Dresden              400   2000        252
-Frankfurt              534   2000        435
-  Dresden              400   2005        423
-Frankfurt              534   2005        913
-```
-
-???
-
-`colummns` use function literals again, with column names type as receiver
 
 ---
 # To type or not to type?
