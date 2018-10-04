@@ -42,20 +42,19 @@ trainData
 trainData.head()
 trainData.schema()
 
-//' Reconfigure output width
-PRINT_MAX_WIDTH = 70
+//' Live@KC Finetune shell experience
+PRINT_MAX_WIDTH = 80
+
+trainData
 trainData.schema()
 
-trainData["passenger_count"]
 
-//' Compare with test data
+//' Live@KC Compare with test data
 var testData = DataFrame.readCSV(dataRoot / "test.csv")
-
 testData.schema()
 
+//' Live@KC How to efficiently access data-frames?
 trainData["vendor_id"]
-
-//end
 
 //' Define columns names as fields for better completion
 
@@ -148,21 +147,22 @@ trainData.schema()
 
 //' ## Data Visualisation
 
-
-//' Analyze overall distribution of the trip duration
-//trainData.plot(trip_duration).geomHistogram()
-trainData.filter { it[trip_duration] lt 1000 }
-    .plot(x = trip_duration)
-    .geomHistogram()
-    .show()
-
+//' LIVE@KC Analyze passenger counts per trip
 trainData.plot(x = passenger_count.asDiscreteVariable)
     .geomBar()
     .xLabel("# Passengers")
     .show()
 
 
-//' Is it really  NYC
+//' LIVE@KC Analyze overall distribution of the trip duration
+//trainData.plot(trip_duration).geomHistogram()
+trainData.filter { it[trip_duration] lt 1000 }
+    .plot(x = trip_duration)
+    .geomHistogram()
+    .show()
+
+
+//' Is it really NYC?
 trainData.plot(x = pickup_longitude, y = pickup_latitude).geomPoint(alpha = .1)
 
 fun DataFrame.constrainCoord(): DataFrame = filter {
@@ -177,7 +177,6 @@ trainData
     .geomPoint(alpha = .1, size = .3)
     .show()
 
-//' LIVE@KC build a better version of the previous plot
 trainData
     .constrainCoord()
     .plot(x = pickup_longitude, y = pickup_latitude)
@@ -215,18 +214,18 @@ trainData.filter { (it["speed"] gt 2) AND (it["speed"] lt 1e2) }
 trainData.addColumn("wday") { it["wday"].map<DayOfWeek> { it.value } }
 
 
-//' Live@KC create speed boxplots (wday, hour) and median-speed tiling
+//' Live@KC Visualize reasonable (<40) speeds per week day
 trainData
     .filter { it["speed"] lt 40.0 }
     .plot("wday", "speed").geomBoxplot()
     .show()
 
-//' redo by hour
+//' Live@KC Visualize reasonable speeds also per hour
 trainData.filter { it["speed"] lt 40.0 }
     .plot("hour".asDiscreteVariable, "speed").geomBoxplot()
     .show()
 
-//' wday x hours x medians
+//' Live@KC wday x hours x medians
 trainData
 //    .filter { (it["speed"] lt 40.0) AND (it[trip_duration] lt 3600) }
     .groupBy("wday", "hour")
@@ -317,7 +316,7 @@ valMatDf = valMatDf.addColumn(predTripDurcation) { predictUnwrapped }
 valMatDf.schema()
 
 
-//' LIVE@KC explore correlation
+//' LIVE@KC explore correlation between ground truth and predicted duration
 valMatDf.sampleN(10000)
     .plot(x = trip_duration, y = predTripDurcation)
     .geomPoint(alpha = .1)
