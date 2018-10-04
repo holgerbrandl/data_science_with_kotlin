@@ -1,6 +1,8 @@
 @file:MavenRepository("bintray-plugins", "http://jcenter.bintray.com")
 
 @file:DependsOnMaven("com.github.holgerbrandl:kravis:0.5")
+@file:Suppress("PropertyName")
+
 //@file:DependsOnMaven("ml.dmlc:xgboost4j:0.80")
 
 
@@ -23,12 +25,15 @@ import java.time.format.DateTimeFormatter
 
 val dataRoot = File("/Users/brandl/Desktop/taxi_data")
 
-dataRoot.listFiles().forEach { println(it) }
+dataRoot
+    .listFiles()
+    .forEach { println(it) }
 
 operator fun File.div(fileName: String) = this.resolve(fileName)
 
 var allTrainData = DataFrame.readCSV(dataRoot / "train.csv")
 var trainData = allTrainData.sampleFrac(0.3)
+//trainData.writeTSV(File("/Users/brandl/someTaxiRides.csv"))
 //var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
 
 
@@ -47,9 +52,13 @@ trainData["passenger_count"]
 var testData = DataFrame.readCSV(dataRoot / "test.csv")
 
 testData.schema()
+
+trainData["vendor_id"]
+
 //end
 
 //' Define columns names as fields for better completion
+
 
 /** a unique identifier for each trip*/
 val id: String = "id"
@@ -75,12 +84,9 @@ val store_and_fwd_flag: String = "store_and_fwd_flag"
 /** duration of the trip in seconds */
 val trip_duration: String = "trip_duration"
 
-
-/**Inferrred attribute */
+/**Inferred attribute */
 val distance = "distance"
 
-
-trainData["vendor_id"]
 trainData[vendor_id]
 
 
@@ -130,12 +136,14 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
 trainData = prepareFeatures(trainData)
 trainData.schema()
 
+//trainData.writeTSV(File("trainDataTmp.txt"))
+//trainData = DataFrame.readTSV(File("trainDataTmp.txt"))
+
 
 //fun DataFrame.cleanup(): DataFrame = filter { it[trip_duration] lt 22 * 3600.0 }
 //        .filter { it[distance] gt 0.0 }
 //        .filter { it[trip_duration] gt 10.0 }
 //        .filter { it["speed"] lt 100.0 }
-
 
 
 //' ## Data Visualisation
@@ -208,7 +216,6 @@ trainData.addColumn("wday") { it["wday"].map<DayOfWeek> { it.value } }
 
 
 //' Live@KC create speed boxplots (wday, hour) and median-speed tiling
-
 trainData
     .filter { it["speed"] lt 40.0 }
     .plot("wday", "speed").geomBoxplot()
@@ -237,7 +244,7 @@ trainData
 // https://youtrack.jetbrains.net/issue/KT-24491 and // https://github.com/khud/sparklin/issues/34)
 
 // LIVE@KC Create helper to split train and validation data (inkl refac into extension method)
-fun DataFrame.splitTrainTest(splitProportion: Double = 0.3) = shuffle().run {
+fun DataFrame.splitTrainTest(splitProportion: Double = 0.7) = shuffle().run {
     val splitter = (splitProportion * nrow).toInt()
     slice(1..splitter) to slice((splitter + 1)..nrow)
 }
@@ -245,7 +252,7 @@ fun DataFrame.splitTrainTest(splitProportion: Double = 0.3) = shuffle().run {
 //val (train, validation) = trainData.splitTrainTest(splitProportion = 0.4)
 // does not work yet in kshell
 
-val dataSplit = allTrainData.splitTrainTest()
+val dataSplit = prepareFeatures(allTrainData).splitTrainTest()
 val trainMatDf = dataSplit.first
 var valMatDf = dataSplit.second
 
@@ -255,7 +262,6 @@ fun DataFrame.selectPredictors(): DataFrame = select(
 ).oneHot<Month>("month")
     .oneHot<DayOfWeek>("wday")
     .addColumn("work") { rows.map { if (it["work"] as Boolean) 1 else 0 } }
-
 
 
 fun DataFrame.buildTrainMatrix(responseVariable: String = trip_duration): DMatrix {
@@ -293,11 +299,14 @@ val watches = hashMapOf<String, DMatrix>().apply {
 // number of boosting iteration =3 would just build a simple 2-step function model
 val nround = 10
 val booster = XGBoost.train(trainMat, params, nround, watches, null, null)
+//' How does our model look like
+booster
 
 //' Predict trip duration
 //var predicts = booster.predict(trainMat)
 var predicts = booster.predict(valMatDf.buildTrainMatrix())
-//unwrap result
+
+//' Unwrap result
 val predictUnwrapped = predicts.map { it.first() }
 
 predicts.size
@@ -309,7 +318,12 @@ valMatDf.schema()
 
 
 //' LIVE@KC explore correlation
-valMatDf.plot(x = trip_duration, y = predTripDurcation).geomPoint(alpha = .1).scaleXLog10().scaleYLog10().show()
+valMatDf.sampleN(10000)
+    .plot(x = trip_duration, y = predTripDurcation)
+    .geomPoint(alpha = .1)
+    .scaleXLog10()
+    .scaleYLog10()
+    .show()
 
 
 // explore feature importance

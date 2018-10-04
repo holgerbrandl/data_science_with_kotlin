@@ -6,7 +6,7 @@ Welcome Slides
 ---
 
 
-## PreBLoc,
+## Pre Block,
 
 
 Go to kaggle -NYC --> kernel --> no koltlin --> sad --> change it (what if not at kotlinconfi with all us experts in one room)
@@ -17,13 +17,12 @@ we need data --> download desktop --> done (start from unzipped)
 
 walk through project gradle
 
-create shell in ~/Desktop/taxi_data
+create shell in ~/Desktop/taxi_data --> shell is a very special snowflake
 
 walk through KotlinConfs
 
-## TBD
 
-bring in weather (if possible via kafka)
+## TBD
 
 build feature matrix
 
