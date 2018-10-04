@@ -1,10 +1,8 @@
 @file:MavenRepository("bintray-plugins", "http://jcenter.bintray.com")
 
-//@file:DependsOn("de.mpicbg.scicomp:krangl:0.10.2")
-//@file:DependsOn("de.mpicbg.scicomp:krangl:0.11-SNAPSHOT")
-//@file:DependsOn("com.github.holgerbrandl:kravis:0.4")
 @file:DependsOnMaven("com.github.holgerbrandl:kravis:0.5")
 
+//@file:DependsOn("com.github.holgerbrandl:kravis:0.4")
 //@file:DependsOnMaven("ml.dmlc:xgboost4j:0.80")
 
 
@@ -23,7 +21,6 @@ import java.time.format.DateTimeFormatter
 
 
 //' # A wild ride through NYC with Kotlin
-//
 //' Predict taxi trip durations in NYC. For detail see https://www.kaggle.com/c/nyc-taxi-trip-duration
 
 val dataRoot = File("/Users/brandl/Desktop/taxi_data")
@@ -38,13 +35,13 @@ var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
 
 var testData = DataFrame.readCSV(dataRoot / "test.csv")
 
-//'Live@KC Explore structure and differences between test and training data
+//' Live@KC Explore structure and differences between test and training data
 trainData
 trainData.head()
 trainData.schema()
 
 // reconfigure output width
-PRINT_MAX_WIDTH = 80
+PRINT_MAX_WIDTH = 70
 trainData.schema()
 
 trainData["passenger_count"]
@@ -86,6 +83,7 @@ val distance = "distance"
 trainData["vendor_id"]
 trainData[vendor_id]
 
+
 //' ## Feature Engineering
 
 fun prepareFeatures(trainData: DataFrame): DataFrame {
@@ -93,7 +91,7 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
     val datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     trainData = trainData.addColumns(
-        pickup_datetime to { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
+        pickup_datetime `=` { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
     )
     //https://stackoverflow.com/questions/639695/how-to-convert-latitude-or-longitude-to-meters
     val coordDistance = fun(lon1: Double, lat1: Double, lon2: Double, lat2: Double): Double {
@@ -118,11 +116,11 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
     }
 
     trainData = trainData.addColumns(
-        "month" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
-        "month" to { it[pickup_datetime].map<LocalDateTime>() { it.month } },
-        "wday" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
-        "hour" to { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
-        "work" to { it["hour"].map<Int> { (8..18).contains(it) } }
+        "month" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
+        "month" `=` { it[pickup_datetime].map<LocalDateTime>() { it.month } },
+        "wday" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
+        "hour" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
+        "work" `=` { it["hour"].map<Int> { (8..18).contains(it) } }
     )
 
     return trainData
@@ -139,9 +137,8 @@ trainData.schema()
 //        .filter { it["speed"] lt 100.0 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //' ## Data Visualisation
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 //' Analyze overall distribution of the trip duration
@@ -150,6 +147,7 @@ trainData.filter { it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHisto
 trainData.plot(x = passenger_count.asDiscreteVariable)
     .geomBar()
     .xLabel("# Passengers")
+    .show()
 
 
 //' Is it really  NYC
@@ -165,6 +163,7 @@ trainData
     .constrainCoord()
     .plot(x = pickup_longitude, y = pickup_latitude)
     .geomPoint(alpha = .1, size = .3)
+    .show()
 
 //' LIVE@KC build a better version of the previous plot
 trainData
@@ -179,15 +178,15 @@ trainData
     .plot(distance, trip_duration)
     .geomPoint()
     .scaleYLog10().scaleXLog10()
+    .show()
 
-//trainData[distance].median()
 
 //' try again  but with binning
 trainData
     .plot(distance, trip_duration)
     .geomBin2D()
     .scaleYLog10().scaleXLog10()
-
+    .show()
 
 //' Speed analysis
 trainData = trainData.addColumn("speed") { it[distance] / it[trip_duration] * 3.6 }
@@ -198,62 +197,57 @@ trainData.filter { (it["speed"] gt 2) AND (it["speed"] lt 1e2) }
     .plot("speed")
     .geomHistogram(fill = RColor.red, bins = 50)
     .labs(x = "Average speed [km/h] (direct distance)")
+    .show()
 
 
 //' Speed analysis by day and hour
 trainData.addColumn("wday") { it["wday"].map<DayOfWeek> { it.value } }
 
 
-//Live@KC do heatmap
+//' Live@KC create speed boxplots (wday, hour) and median-speed tiling
 
 trainData
     .filter { it["speed"] lt 40.0 }
     .plot("wday", "speed").geomBoxplot()
+    .show()
 
+//' redo by hour
 trainData.filter { it["speed"] lt 40.0 }
     .plot("hour".asDiscreteVariable, "speed").geomBoxplot()
+    .show()
 
+//' wdayxhoursxmedians
 trainData
 //    .filter { (it["speed"] lt 40.0) AND (it[trip_duration] lt 3600) }
 //    .cleanup()
     .groupBy("wday", "hour")
-    .summarize("median_speed" to { it["speed"].median() })
+    .summarize("median_speed" `=` { it["speed"].median() })
     .addColumn("wday_order") { it["wday"].map<DayOfWeek> { it.value } }
     .plot("hour", reorder("wday", "wday_order"), fill = "median_speed")
     .geomTile()
     .labs(x = "Hour of the day", y = "Day of the week")
+    .show()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Build a predictive model with xgboost
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//trainData.writeCSV(File("trainData.dump.txt"))
-//var trainData =DataFrame.readCSV(File("trainData.dump.txt"))
-
+// https://youtrack.jetbrains.net/issue/KT-24491 and // https://github.com/khud/sparklin/issues/34)
 
 // LIVE@KC Create helper to split train and validation data (inkl refac into extension method)
-fun DataFrame.splitTrainTest(): Pair<DataFrame, DataFrame> {
-    return shuffle().run {
-        val n = (nrow * 0.3).toInt();
-        slice(1..n) to slice(n..nrow)
-    }
+fun DataFrame.splitTrainTest(splitProportion: Double = 0.3) = shuffle().run {
+    val splitter = (splitProportion * nrow).toInt()
+    slice(1..splitter) to slice((splitter + 1)..nrow)
 }
 
+//val (train, validation) = trainData.splitTrainTest(splitProportion = 0.4)
+// does not work yet in kshell
 
-// https://github.com/khud/sparklin/issues/34
-//val (trainMatDf, valMatDf) = trainFeat.splitTrainTest()
 val dataSplit = trainData.splitTrainTest()
 val trainMatDf = dataSplit.first
 var valMatDf = dataSplit.second
 
-//trainMatDf = trainMatDf.select{ !startsWith("month") }.select{ !startsWith("wday") }
-//trainMatDf = trainMatDf.select{ listOf(passenger_count, "dist")}.remove(trip_duration)
-
-
-//end
-//trainMatDf.writeCSV(File("trainMatDf.dump.txt"))
-//var trainMatDf =DataFrame.readCSV(File("trainMatDf.dump.txt"))
 
 fun DataFrame.selectPredictors(): DataFrame = select(
     passenger_count, pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, distance, "month", "wday", "hour", "work"
@@ -262,13 +256,12 @@ fun DataFrame.selectPredictors(): DataFrame = select(
     .addColumn("work") { rows.map { if (it["work"] as Boolean) 1 else 0 } }
 
 
+
 fun DataFrame.buildTrainMatrix(responseVariable: String = trip_duration): DMatrix {
     val x = selectPredictors().toFloatMatrix()
     val xLong: FloatArray = x.reduce { left, right -> left + right }
     val y = this[responseVariable].asDoubles().map { it!!.toFloat() }.toFloatArray()
-    return DMatrix(xLong, nrow, ncol - 1).apply {
-        label = y
-    }
+    return DMatrix(xLong, nrow, ncol - 1).apply { label = y }
 }
 
 // visualize feature matrix
@@ -308,18 +301,21 @@ val predictUnwrapped = predicts.map { it.first() }
 
 predicts.size
 
+//' Combine predictions with ground truth
 val predTripDurcation = "predicted_trip_duration"
 valMatDf = valMatDf.addColumn(predTripDurcation) { predictUnwrapped }
 valMatDf.schema()
 
-//LIVE@KC explore korrelation
-valMatDf.plot(x = trip_duration, y = predTripDurcation).geomPoint(alpha = .1).scaleXLog10().scaleYLog10()
+
+//' LIVE@KC explore correlation
+valMatDf.plot(x = trip_duration, y = predTripDurcation).geomPoint(alpha = .1).scaleXLog10().scaleYLog10().show()
+
 
 // explore feature importance
 //booster.getFeatureScore(null)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Prepare submission file
+//' ## Prepare submission file
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fun DataFrame.buildTestMatrix(): DMatrix {
@@ -333,13 +329,17 @@ val testFeat = prepareFeatures(testData).selectPredictors().buildTestMatrix()
 
 var testPrediction = booster.predict(testFeat).map { it.first() }
 
+//' LIVE@KC create final submission file
 val kaggleSubmission = testData
     .addColumn("trip_duration") { testPrediction }
     .select("id", "trip_duration")
 
+//' Final Results schema
 kaggleSubmission.schema()
 kaggleSubmission.writeCSV(File("kotlin4kaggle.csv"))
 
 println("Finished first (out of N>>1) kaggle iteration using kotlin!")
 
 
+// submiy with
+// kaggle competitions submit -c nyc-taxi-trip-duration -f kotlin4kaggle.csv -m "Proof of Concept kernel written in Kotlin"

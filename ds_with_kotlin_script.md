@@ -17,7 +17,7 @@ we need data --> download desktop --> done (start from unzipped)
 
 walk through project gradle
 
-create shell
+create shell in ~/Desktop/taxi_data
 
 walk through KotlinConfs
 
