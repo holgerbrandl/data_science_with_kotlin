@@ -29,22 +29,24 @@ dataRoot.listFiles().forEach { println(it) }
 
 operator fun File.div(fileName: String) = this.resolve(fileName)
 
-//var allTrainData = DataFrame.readCSV(dataRoot / "train.csv")
-//var trainData = allTrainData.sampleFrac(0.3)
-var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
+var allTrainData = DataFrame.readCSV(dataRoot / "train.csv")
+var trainData = allTrainData.sampleFrac(0.3)
+//var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
 
-var testData = DataFrame.readCSV(dataRoot / "test.csv")
 
 //' Live@KC Explore structure and differences between test and training data
 trainData
 trainData.head()
 trainData.schema()
 
-// reconfigure output width
+//' Reconfigure output width
 PRINT_MAX_WIDTH = 70
 trainData.schema()
 
 trainData["passenger_count"]
+
+//' Compare with test data
+var testData = DataFrame.readCSV(dataRoot / "test.csv")
 
 testData.schema()
 //end
@@ -170,7 +172,7 @@ trainData
     .constrainCoord()
     .plot(x = pickup_longitude, y = pickup_latitude)
     .geomBin2D(bins = 80)
-
+    .show()
 
 //' Correlate distance with trip duration (is it a promising predictor?)
 trainData
