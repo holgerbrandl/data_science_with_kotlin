@@ -95,6 +95,10 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
     var trainData = trainData
     val datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
+    // LIVE@KC explore date format
+    val aDate = trainData[pickup_datetime].asStrings().first()
+    LocalDateTime.parse(aDate!!)
+
     trainData = trainData.addColumns(
         pickup_datetime `=` { it[pickup_datetime].map<String> { LocalDateTime.parse(it, datePattern) } }
     )
