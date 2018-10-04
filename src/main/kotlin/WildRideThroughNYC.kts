@@ -83,8 +83,12 @@ val store_and_fwd_flag: String = "store_and_fwd_flag"
 /** duration of the trip in seconds */
 val trip_duration: String = "trip_duration"
 
-/**Inferred attribute */
+/**Inferred attributes */
 val distance = "distance"
+val month = "month"
+val wday = "wday"
+val hour = "hour"
+val work = "work"
 
 trainData[vendor_id]
 
@@ -125,11 +129,11 @@ fun prepareFeatures(trainData: DataFrame): DataFrame {
     }
 
     trainData = trainData.addColumns(
-        "month" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
-        "month" `=` { it[pickup_datetime].map<LocalDateTime>() { it.month } },
-        "wday" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
-        "hour" `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
-        "work" `=` { it["hour"].map<Int> { (8..18).contains(it) } }
+        // month `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.month } },
+        month `=` { it[pickup_datetime].map<LocalDateTime>() { it.month } },
+        wday `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.dayOfWeek } },
+        hour `=` { it[pickup_datetime].asType<LocalDateTime>().mapNonNull { it.hour } },
+        work `=` { it[hour].map<Int> { (8..18).contains(it) } }
     )
 
     return trainData
@@ -213,29 +217,31 @@ trainData.filter { (it["speed"] gt 2) AND (it["speed"] lt 1e2) }
     .labs(x = "Average speed [km/h] (direct distance)")
     .show()
 
+//' Live@KC Extract field for speed property
+
 
 //' Speed analysis by day and hour
-trainData.addColumn("wday") { it["wday"].map<DayOfWeek> { it.value } }
+trainData.addColumn(wday) { it[wday].map<DayOfWeek> { it.value } }
 
 
 //' Live@KC Visualize reasonable (<40) speeds per week day
 trainData
     .filter { it["speed"] lt 40.0 }
-    .plot("wday", "speed").geomBoxplot()
+    .plot(wday, "speed").geomBoxplot()
     .show()
 
 //' Live@KC Visualize reasonable speeds also per hour
 trainData.filter { it["speed"] lt 40.0 }
-    .plot("hour".asDiscreteVariable, "speed").geomBoxplot()
+    .plot(hour.asDiscreteVariable, "speed").geomBoxplot()
     .show()
 
 //' Live@KC wday x hours x medians
 trainData
 //    .filter { (it["speed"] lt 40.0) AND (it[trip_duration] lt 3600) }
-    .groupBy("wday", "hour")
+    .groupBy(wday, hour)
     .summarize("median_speed" `=` { it["speed"].median() })
-    .addColumn("wday_order") { it["wday"].map<DayOfWeek> { it.value } }
-    .plot("hour", reorder("wday", "wday_order"), fill = "median_speed")
+    .addColumn("wday_order") { it[wday].map<DayOfWeek> { it.value } }
+    .plot(hour, reorder(wday, "wday_order"), fill = "median_speed")
     .geomTile()
     .labs(x = "Hour of the day", y = "Day of the week")
     .show()
@@ -261,10 +267,10 @@ var valMatDf = dataSplit.second
 
 
 fun DataFrame.selectPredictors(): DataFrame = select(
-    passenger_count, pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, distance, "month", "wday", "hour", "work"
-).oneHot<Month>("month")
-    .oneHot<DayOfWeek>("wday")
-    .addColumn("work") { rows.map { if (it["work"] as Boolean) 1 else 0 } }
+    passenger_count, pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude, distance, month, wday, hour, work
+).oneHot<Month>(month)
+    .oneHot<DayOfWeek>(wday)
+    .addColumn(work) { rows.map { if (it[work] as Boolean) 1 else 0 } }
 
 
 fun DataFrame.buildTrainMatrix(responseVariable: String = trip_duration): DMatrix {
