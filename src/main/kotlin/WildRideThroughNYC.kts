@@ -33,8 +33,6 @@ operator fun File.div(fileName: String) = this.resolve(fileName)
 
 var allTrainData = DataFrame.readCSV(dataRoot / "train.csv")
 var trainData = allTrainData.sampleFrac(0.3)
-//trainData.writeTSV(File("/Users/brandl/someTaxiRides.csv"))
-//var trainData = DataFrame.readTSV(File("/Users/brandl/someTaxiRides.csv"))
 
 
 //' Live@KC Explore structure and differences between test and training data
