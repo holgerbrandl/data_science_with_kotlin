@@ -77,7 +77,6 @@ val dropoff_longitude: String = "dropoff_longitude"
 val dropoff_latitude: String = "dropoff_latitude"
 /** This flag indicates whether the trip record was held in vehicle memory before sending to the vendor because the vehicle did not have a connection to the server. Y=store and forward; N=not a store and forward trip**/
 val store_and_fwd_flag: String = "store_and_fwd_flag"
-
 /** duration of the trip in seconds */
 val trip_duration: String = "trip_duration"
 
@@ -87,6 +86,7 @@ val month = "month"
 val wday = "wday"
 val hour = "hour"
 val work = "work"
+
 
 trainData[vendor_id]
 
