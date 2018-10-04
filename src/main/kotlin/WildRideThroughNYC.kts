@@ -1,8 +1,6 @@
 @file:MavenRepository("bintray-plugins", "http://jcenter.bintray.com")
 
 @file:DependsOnMaven("com.github.holgerbrandl:kravis:0.5")
-
-//@file:DependsOn("com.github.holgerbrandl:kravis:0.4")
 //@file:DependsOnMaven("ml.dmlc:xgboost4j:0.80")
 
 
@@ -145,7 +143,11 @@ trainData.schema()
 
 //' Analyze overall distribution of the trip duration
 //trainData.plot(trip_duration).geomHistogram()
-trainData.filter { it[trip_duration] lt 1000 }.plot(x = trip_duration).geomHistogram()
+trainData.filter { it[trip_duration] lt 1000 }
+    .plot(x = trip_duration)
+    .geomHistogram()
+    .show()
+
 trainData.plot(x = passenger_count.asDiscreteVariable)
     .geomBar()
     .xLabel("# Passengers")
@@ -171,7 +173,7 @@ trainData
 trainData
     .constrainCoord()
     .plot(x = pickup_longitude, y = pickup_latitude)
-    .geomBin2D(bins = 80)
+    .geomBin2D(bins = 90)
     .show()
 
 //' Correlate distance with trip duration (is it a promising predictor?)
@@ -193,7 +195,6 @@ trainData
 //' Speed analysis
 trainData = trainData.addColumn("speed") { it[distance] / it[trip_duration] * 3.6 }
 
-trainData.plot(distance).geomHistogram()
 
 trainData.filter { (it["speed"] gt 2) AND (it["speed"] lt 1e2) }
     .plot("speed")
@@ -218,10 +219,9 @@ trainData.filter { it["speed"] lt 40.0 }
     .plot("hour".asDiscreteVariable, "speed").geomBoxplot()
     .show()
 
-//' wdayxhoursxmedians
+//' wday x hours x medians
 trainData
 //    .filter { (it["speed"] lt 40.0) AND (it[trip_duration] lt 3600) }
-//    .cleanup()
     .groupBy("wday", "hour")
     .summarize("median_speed" `=` { it["speed"].median() })
     .addColumn("wday_order") { it["wday"].map<DayOfWeek> { it.value } }
@@ -230,9 +230,8 @@ trainData
     .labs(x = "Hour of the day", y = "Day of the week")
     .show()
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Build a predictive model with xgboost
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//' ## Build a predictive model with xgboost
 
 
 // https://youtrack.jetbrains.net/issue/KT-24491 and // https://github.com/khud/sparklin/issues/34)
@@ -246,7 +245,7 @@ fun DataFrame.splitTrainTest(splitProportion: Double = 0.3) = shuffle().run {
 //val (train, validation) = trainData.splitTrainTest(splitProportion = 0.4)
 // does not work yet in kshell
 
-val dataSplit = trainData.splitTrainTest()
+val dataSplit = allTrainData.splitTrainTest()
 val trainMatDf = dataSplit.first
 var valMatDf = dataSplit.second
 
@@ -295,7 +294,7 @@ val watches = hashMapOf<String, DMatrix>().apply {
 val nround = 10
 val booster = XGBoost.train(trainMat, params, nround, watches, null, null)
 
-// predict trip duration
+//' Predict trip duration
 //var predicts = booster.predict(trainMat)
 var predicts = booster.predict(valMatDf.buildTrainMatrix())
 //unwrap result
@@ -316,9 +315,8 @@ valMatDf.plot(x = trip_duration, y = predTripDurcation).geomPoint(alpha = .1).sc
 // explore feature importance
 //booster.getFeatureScore(null)
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //' ## Prepare submission file
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 fun DataFrame.buildTestMatrix(): DMatrix {
     val x = toFloatMatrix()
@@ -343,5 +341,5 @@ kaggleSubmission.writeCSV(File("kotlin4kaggle.csv"))
 println("Finished first (out of N>>1) kaggle iteration using kotlin!")
 
 
-// submiy with
-// kaggle competitions submit -c nyc-taxi-trip-duration -f kotlin4kaggle.csv -m "Proof of Concept kernel written in Kotlin"
+//' submit with
+//' `kaggle competitions submit -c nyc-taxi-trip-duration -f kotlin4kaggle.csv -m "Proof of Concept kernel written in Kotlin"`
