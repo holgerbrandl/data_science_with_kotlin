@@ -1,6 +1,12 @@
 # Building Data Science Workflows with Kotlin
 
-### >> [slides](https://holgerbrandl.github.io/data_science_with_kotlin/data_science_with_kotlin.html) <<
+It was a wild -- and fun!! -- ride through NYC with Kotlin at [KotlinConf](https://kotlinconf.com/), see yourself!
+
+### >> [Slides](https://holgerbrandl.github.io/data_science_with_kotlin/data_science_with_kotlin.html) <<
+
+### >> [YouTube Video](https://www.youtube.com/watch?v=yjVW6uCmVBA) <<
+
+### >> [kts converted to Jupyter Notebook](report_rendering/nyc/WildRideThroughNYC.nbconvert.ipynb) <<
 
 
 ## Abstract
@@ -12,13 +18,6 @@ In this session I would like to present the design and features of `krangl`, whi
 As an example, we will discuss how to compete at kaggle with workflows written in Kotlin. To facilitate that, we will use Jupyter to convert Kotlin scripts into HTML/notebooks.
 
 
-
-## About me
-
-Holger Brandl works as a data scientist at the Max Planck Institute of Molecular Cell Biology and Genetics (Dresden, Germany). He holds a Ph.D. degree in machine learning, and has developed new concepts in the field of computational linguistics. More recently he has co-authored publications in high-ranking journals such as Nature and Science. He is actively contributing to the Kotlin community by developing tools and libraries for bioinformatics, high-performance computing and data-science.
-
-
-
 ## Sources
 
 For slide sources see `docs`
@@ -28,7 +27,7 @@ For example code see `src`
 
 # Taxi challenge
 
-We picked the taxi challenge from Kaggle as an example
+We picked the taxi trip duration challengefrom Kaggle as an example
 
 https://www.kaggle.com/c/nyc-taxi-trip-duration
 
@@ -37,55 +36,36 @@ https://www.kaggle.com/c/nyc-taxi-trip-duration
 
 
 * [NYC Taxi EDA - Update: The fast & the curious](https://www.kaggle.com/headsortails/nyc-taxi-eda-update-the-fast-the-curious)
-
-
 * [From EDA to the Top (LB 0.367)](https://www.kaggle.com/gaborfodor/from-eda-to-the-top-lb-0-367)
-
-
 * [NYCT - from A to Z with XGBoost](https://www.kaggle.com/karelrv/nyct-from-a-to-z-with-xgboost-tutorial)
 
 
-
-All kernels can be found at https://www.kaggle.com/c/nyc-taxi-trip-duration/kernels.
+All NYC trip duration kernels can be found at https://www.kaggle.com/c/nyc-taxi-trip-duration/kernels.
 
 ## References
 
-Also see [Kotlin’s emerging data-science ecosystem](https://holgerbrandl.github.io/kotlin4ds_kotlin_night_frankfurt//emerging_kotlin_ds_ecosystem.html which I gave at the first Kotlin Night in Frankurt in spring 2018
+Previous Talk Pointers
+
+*  [Kotlin's emerging data-science ecosystem](https://holgerbrandl.github.io/kotlin4ds_kotlin_night_frankfurt//emerging_kotlin_ds_ecosystem.html)  from the Kotlin Night in Frankurt (Germany) in spring 2018
 
 
 Repo Pointers
 
+* https://github.com/holgerbrandl/kscript
 * https://github.com/holgerbrandl/krangl
 * https://github.com/holgerbrandl/kravis
 * https://github.com/ligee/kotlin-jupyter
-* https://www.rstudio.com/
-
 
 Articles
 
 * https://kotlinfrompython.wordpress.com/2017/05/27/why-program-in-kotlin-instead-of-python/
 
+Figure References
 
-## Todo
-
-* use just nyc for examples
-* incrementally do interactive stuff
-* cut away tech-slides (just mention them)
-* jupyter before converter **{done}**
-
-### Later
-
-* column should have more useful toString `weatherData["date"]`
-* expression context should expose rows for simplified rowwise operations
-* `krangl` allow different join column names
+* https://www.rstudio.com/
 
 
-* provide better row-iterator api in krangl (see https://haifengl.github.io/smile/data.html_
+## About me
 
-* Fix shaded `it` in krangl map operations
-
-
-# Misc
-
-nice `gtb.importance().zip(trainingData.names).asDataFrame()`
+Holger Brandl works as a data scientist at the Max Planck Institute of Molecular Cell Biology and Genetics (Dresden, Germany). He holds a Ph.D. degree in machine learning, and has developed new concepts in the field of computational linguistics. More recently he has co-authored publications in high-ranking journals such as Nature and Science. He is actively contributing to the Kotlin community by developing tools and libraries for bioinformatics, high-performance computing and data-science.
 
